@@ -18,6 +18,16 @@ class Program
             Console.ForegroundColor = ConsoleColor.DarkGray;
             PrettyPrint(expression);
             Console.ForegroundColor = color;
+
+            if (parser.Diagnostics.Any())
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                foreach (var diagnostic in parser.Diagnostics)
+                {
+                    Console.WriteLine(diagnostic);
+                }
+                Console.ForegroundColor = color;
+            }
         }
     }
 
@@ -88,6 +98,7 @@ class Lexer
 {
     private readonly string _text;
     private int _position;
+    private List<string> _diagnostics = new();
 
     private char Current
     {
@@ -98,6 +109,8 @@ class Lexer
             return _text[_position];
         }
     }
+
+    public IEnumerable<string> Diagnostics => _diagnostics;
 
     public Lexer(string text)
     {
@@ -156,6 +169,7 @@ class Lexer
         else if (Current == ')')
             return new SyntaxToken(SyntaxKind.CloseParenthesis, _position++, ")", null);
 
+        _diagnostics.Add($"Error: Bad character input: {Current}");
         return new SyntaxToken(SyntaxKind.Invalid, _position++, _text.Substring(_position - 1, 1), null);
     }
 }
@@ -215,6 +229,7 @@ class Parser
 {
     private readonly SyntaxToken[] _tokens;
     private int _position;
+    private List<string> _diagnostics = new();
 
     public Parser(string text)
     {
@@ -229,8 +244,10 @@ class Parser
             {
                 tokens.Add(token);
             }
-            _tokens = tokens.ToArray();
         } while (token.Kind != SyntaxKind.EOF);
+
+        _tokens = tokens.ToArray();
+        _diagnostics.AddRange(lexer.Diagnostics);
     }
 
     private SyntaxToken Peek(int offset = 0)
@@ -241,6 +258,7 @@ class Parser
         return _tokens[index];
     }
 
+    public IEnumerable<string> Diagnostics => _diagnostics;
     private SyntaxToken Current => Peek(0);
 
     private SyntaxToken NextToken()
@@ -254,6 +272,8 @@ class Parser
     {
         if (Current.Kind == kind)
             return NextToken();
+
+        _diagnostics.Add($"Error: Unexpected token <{Current.Kind}>, expected <{kind}>");
         return new SyntaxToken(kind, Current.Position, null, null);
     }
 
