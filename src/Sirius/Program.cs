@@ -96,9 +96,9 @@ class SyntaxToken : SyntaxNode
 
 class Lexer
 {
+    private List<string> _diagnostics = new();
     private readonly string _text;
     private int _position;
-    private List<string> _diagnostics = new();
 
     private char Current
     {
@@ -125,7 +125,9 @@ class Lexer
     public SyntaxToken NextToken()
     {
         if (_position >= _text.Length)
+        {
             return new SyntaxToken(SyntaxKind.EOF, _position, "\0", null);
+        }
 
         if (char.IsDigit(Current))
         {
@@ -139,6 +141,7 @@ class Lexer
             var length = _position - start;
             var text = _text.Substring(start, length);
             int.TryParse(text, out int value);
+
             return new SyntaxToken(SyntaxKind.Number, start, text, value);
         }
 
