@@ -239,6 +239,7 @@ class Parser
         var tokens = new List<SyntaxToken>();
         var lexer = new Lexer(text);
         SyntaxToken token;
+
         do
         {
             token = lexer.NextToken();
@@ -257,7 +258,10 @@ class Parser
     {
         var index = _position + offset;
         if (index >= _tokens.Length)
+        {
             return _tokens[_tokens.Length - 1];
+        }
+
         return _tokens[index];
     }
 
