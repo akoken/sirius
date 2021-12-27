@@ -361,28 +361,15 @@ class Evaluator
             var right = EvaluateExression(b.Right);
 
             if (b.OperatorToken.Kind == SyntaxKind.PlusToken)
-            {
                 return left + right;
-            }
             else if (b.OperatorToken.Kind == SyntaxKind.MinusToken)
-            {
                 return left - right;
-            }
             else if (b.OperatorToken.Kind == SyntaxKind.StarToken)
-            {
                 return left * right;
-            }
             else if (b.OperatorToken.Kind == SyntaxKind.SlashToken)
-            {
-                if (right == 0)
-                    throw new DivideByZeroException();
-
                 return left / right;
-            }
             else
-            {
                 throw new Exception($"Unexpected binary operator {b.OperatorToken.Kind}");
-            }
         }
 
         throw new Exception($"Unexpected node {node.Kind}");
