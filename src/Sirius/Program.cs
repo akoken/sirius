@@ -12,17 +12,23 @@ class Program
                 return;
 
             var parser = new Parser(line);
-            var expression = parser.Parse();
+            var syntaxTree = parser.Parse();
 
             var color = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            PrettyPrint(expression);
+            PrettyPrint(syntaxTree.Root);
             Console.ForegroundColor = color;
 
-            if (parser.Diagnostics.Any())
+            if (!syntaxTree.Diagnostics.Any())
+            {
+                var evaluator = new Evaluator(syntaxTree.Root);
+                var result = evaluator.Evaluate();
+                Console.WriteLine(result);
+            }
+            else
             {
                 Console.ForegroundColor = ConsoleColor.DarkRed;
-                foreach (var diagnostic in parser.Diagnostics)
+                foreach (var diagnostic in syntaxTree.Diagnostics)
                 {
                     Console.WriteLine(diagnostic);
                 }
@@ -60,17 +66,17 @@ class Program
 
 enum SyntaxKind
 {
-    EOF,
-    Number,
-    Whitespace,
-    Plus,
-    Minus,
-    Star,
-    Slash,
-    OpenParenthesis,
-    CloseParenthesis,
-    Invalid,
-    BinaryExpression
+    EOFToken,
+    NumberToken,
+    WhitespaceToken,
+    PlusToken,
+    MinusToken,
+    StarToken,
+    SlashToken,
+    OpenParenthesisToken,
+    CloseParenthesisToken,
+    InvalidToken,
+    BinaryExpressionToken
 }
 
 class SyntaxToken : SyntaxNode
@@ -126,7 +132,7 @@ class Lexer
     {
         if (_position >= _text.Length)
         {
-            return new SyntaxToken(SyntaxKind.EOF, _position, "\0", null);
+            return new SyntaxToken(SyntaxKind.EOFToken, _position, "\0", null);
         }
 
         if (char.IsDigit(Current))
@@ -140,9 +146,12 @@ class Lexer
 
             var length = _position - start;
             var text = _text.Substring(start, length);
-            int.TryParse(text, out int value);
+            if (!int.TryParse(text, out int value))
+            {
+                _diagnostics.Add($"The number {_text} is not valid Int32.");
+            }
 
-            return new SyntaxToken(SyntaxKind.Number, start, text, value);
+            return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
         }
 
         if (char.IsWhiteSpace(Current))
@@ -156,24 +165,24 @@ class Lexer
 
             var length = _position - start;
             var text = _text.Substring(start, length);
-            return new SyntaxToken(SyntaxKind.Whitespace, start, text, null);
+            return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, null);
         }
 
         if (Current == '+')
-            return new SyntaxToken(SyntaxKind.Plus, _position++, "+", null);
+            return new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null);
         else if (Current == '-')
-            return new SyntaxToken(SyntaxKind.Minus, _position++, "-", null);
+            return new SyntaxToken(SyntaxKind.MinusToken, _position++, "-", null);
         else if (Current == '*')
-            return new SyntaxToken(SyntaxKind.Star, _position++, "*", null);
+            return new SyntaxToken(SyntaxKind.StarToken, _position++, "*", null);
         else if (Current == '/')
-            return new SyntaxToken(SyntaxKind.Slash, _position++, "/", null);
+            return new SyntaxToken(SyntaxKind.SlashToken, _position++, "/", null);
         else if (Current == '(')
-            return new SyntaxToken(SyntaxKind.OpenParenthesis, _position++, "(", null);
+            return new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "(", null);
         else if (Current == ')')
-            return new SyntaxToken(SyntaxKind.CloseParenthesis, _position++, ")", null);
+            return new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, ")", null);
 
         _diagnostics.Add($"Error: Bad character input: {Current}");
-        return new SyntaxToken(SyntaxKind.Invalid, _position++, _text.Substring(_position - 1, 1), null);
+        return new SyntaxToken(SyntaxKind.InvalidToken, _position++, _text.Substring(_position - 1, 1), null);
     }
 }
 
@@ -218,7 +227,7 @@ sealed class BinaryExpressionSyntax : ExpressionSyntax
     public SyntaxToken OperatorToken { get; }
     public ExpressionSyntax Right { get; }
 
-    public override SyntaxKind Kind => SyntaxKind.BinaryExpression;
+    public override SyntaxKind Kind => SyntaxKind.BinaryExpressionToken;
 
     public override IEnumerable<SyntaxNode> GetChildren()
     {
@@ -226,6 +235,20 @@ sealed class BinaryExpressionSyntax : ExpressionSyntax
         yield return OperatorToken;
         yield return Right;
     }
+}
+
+sealed class SyntaxTree
+{
+    public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
+    {
+        Diagnostics = diagnostics.ToArray();
+        Root = root;
+        EndOfFileToken = endOfFileToken;
+    }
+
+    public IReadOnlyList<string> Diagnostics { get; }
+    public ExpressionSyntax Root { get; }
+    public SyntaxToken EndOfFileToken { get; }
 }
 
 class Parser
@@ -244,11 +267,11 @@ class Parser
         {
             token = lexer.NextToken();
 
-            if (token.Kind != SyntaxKind.Whitespace && token.Kind != SyntaxKind.Invalid)
+            if (token.Kind != SyntaxKind.WhitespaceToken && token.Kind != SyntaxKind.InvalidToken)
             {
                 tokens.Add(token);
             }
-        } while (token.Kind != SyntaxKind.EOF);
+        } while (token.Kind != SyntaxKind.EOFToken);
 
         _tokens = tokens.ToArray();
         _diagnostics.AddRange(lexer.Diagnostics);
@@ -284,11 +307,18 @@ class Parser
         return new SyntaxToken(kind, Current.Position, null, null);
     }
 
-    public ExpressionSyntax Parse()
+    public SyntaxTree Parse()
+    {
+        var expression = ParseExpression();
+        var endOfFileToken = Match(SyntaxKind.EOFToken);
+        return new SyntaxTree(_diagnostics, expression, endOfFileToken);
+    }
+
+    private ExpressionSyntax ParseExpression()
     {
         var left = ParsePrimaryExpression();
 
-        while (Current.Kind == SyntaxKind.Plus || Current.Kind == SyntaxKind.Minus)
+        while (Current.Kind == SyntaxKind.PlusToken || Current.Kind == SyntaxKind.MinusToken || Current.Kind == SyntaxKind.StarToken || Current.Kind == SyntaxKind.SlashToken)
         {
             var operatorToken = NextToken();
             var right = ParsePrimaryExpression();
@@ -299,7 +329,62 @@ class Parser
 
     private ExpressionSyntax ParsePrimaryExpression()
     {
-        var numberToken = Match(SyntaxKind.Number);
+        var numberToken = Match(SyntaxKind.NumberToken);
         return new NumberExpressionSyntax(numberToken);
+    }
+}
+
+class Evaluator
+{
+    private readonly ExpressionSyntax _root;
+
+    public Evaluator(ExpressionSyntax root)
+    {
+        _root = root;
+    }
+
+    public int Evaluate()
+    {
+        return EvaluateExression(_root);
+    }
+
+    private int EvaluateExression(ExpressionSyntax node)
+    {
+        if (node is NumberExpressionSyntax n)
+        {
+            return (int)n.NumberToken.Value;
+        }
+
+        if (node is BinaryExpressionSyntax b)
+        {
+            var left = EvaluateExression(b.Left);
+            var right = EvaluateExression(b.Right);
+
+            if (b.OperatorToken.Kind == SyntaxKind.PlusToken)
+            {
+                return left + right;
+            }
+            else if (b.OperatorToken.Kind == SyntaxKind.MinusToken)
+            {
+                return left - right;
+            }
+            else if (b.OperatorToken.Kind == SyntaxKind.StarToken)
+            {
+                return left * right;
+            }
+            else if (b.OperatorToken.Kind == SyntaxKind.SlashToken)
+            {
+                if (right == 0)
+                    throw new DivideByZeroException();
+
+                return left / right;
+            }
+            else
+            {
+                throw new Exception($"Unexpected binary operator {b.OperatorToken.Kind}");
+            }
+        }
+
+        throw new Exception($"Unexpected node {node.Kind}");
     }
 }
