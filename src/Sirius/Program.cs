@@ -76,7 +76,8 @@ enum SyntaxKind
     OpenParenthesisToken,
     CloseParenthesisToken,
     InvalidToken,
-    BinaryExpressionToken
+    BinaryExpressionToken,
+    ParenthesizedExpression
 }
 
 class SyntaxToken : SyntaxNode
@@ -237,6 +238,29 @@ sealed class BinaryExpressionSyntax : ExpressionSyntax
     }
 }
 
+sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
+{
+    public ParenthesizedExpressionSyntax(SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParenthesisToken)
+    {
+        OpenParenthesisToken = openParenthesisToken;
+        Expression = expression;
+        CloseParenthesisToken = closeParenthesisToken;
+    }
+
+    public override SyntaxKind Kind => SyntaxKind.ParenthesizedExpression;
+
+    public SyntaxToken OpenParenthesisToken { get; }
+    public ExpressionSyntax Expression { get; }
+    public SyntaxToken CloseParenthesisToken { get; }
+
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+        yield return OpenParenthesisToken;
+        yield return Expression;
+        yield return CloseParenthesisToken;
+    }
+}
+
 sealed class SyntaxTree
 {
     public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
@@ -307,29 +331,58 @@ class Parser
         return new SyntaxToken(kind, Current.Position, null, null);
     }
 
+    private ExpressionSyntax ParseExpression()
+    {
+        return ParseTerm();
+    }
+
     public SyntaxTree Parse()
     {
-        var expression = ParseExpression();
+        var expression = ParseTerm();
         var endOfFileToken = Match(SyntaxKind.EOFToken);
         return new SyntaxTree(_diagnostics, expression, endOfFileToken);
     }
 
-    private ExpressionSyntax ParseExpression()
+    private ExpressionSyntax ParseTerm()
     {
-        var left = ParsePrimaryExpression();
+        ExpressionSyntax? left = ParseFactor();
 
-        while (Current.Kind == SyntaxKind.PlusToken || Current.Kind == SyntaxKind.MinusToken || Current.Kind == SyntaxKind.StarToken || Current.Kind == SyntaxKind.SlashToken)
+        while (Current.Kind == SyntaxKind.PlusToken || Current.Kind == SyntaxKind.MinusToken)
         {
-            var operatorToken = NextToken();
-            var right = ParsePrimaryExpression();
+            SyntaxToken? operatorToken = NextToken();
+            ExpressionSyntax? right = ParsePrimaryExpression();
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         }
+
+        return left;
+    }
+
+    private ExpressionSyntax ParseFactor()
+    {
+        ExpressionSyntax? left = ParsePrimaryExpression();
+
+        while (Current.Kind == SyntaxKind.StarToken || Current.Kind == SyntaxKind.SlashToken)
+        {
+            SyntaxToken? operatorToken = NextToken();
+            ExpressionSyntax? right = ParsePrimaryExpression();
+            left = new BinaryExpressionSyntax(left, operatorToken, right);
+        }
+
         return left;
     }
 
     private ExpressionSyntax ParsePrimaryExpression()
     {
-        var numberToken = Match(SyntaxKind.NumberToken);
+        if (Current.Kind == SyntaxKind.OpenParenthesisToken)
+        {
+            var left = NextToken();
+            var expression = ParseExpression();
+            var right = Match(SyntaxKind.CloseParenthesisToken);
+
+            return new ParenthesizedExpressionSyntax(left, expression, right);
+        }
+
+        SyntaxToken? numberToken = Match(SyntaxKind.NumberToken);
         return new NumberExpressionSyntax(numberToken);
     }
 }
@@ -370,6 +423,11 @@ class Evaluator
                 return left / right;
             else
                 throw new Exception($"Unexpected binary operator {b.OperatorToken.Kind}");
+        }
+
+        if (node is ParenthesizedExpressionSyntax p)
+        {
+            return EvaluateExression(p.Expression);
         }
 
         throw new Exception($"Unexpected node {node.Kind}");
