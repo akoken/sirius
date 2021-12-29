@@ -2,15 +2,17 @@
 
 sealed class SyntaxTree
 {
-    public IReadOnlyList<string> Diagnostics { get; }
     public ExpressionSyntax Root { get; }
+
     public SyntaxToken EndOfFileToken { get; }
 
-    public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
+    public IReadOnlyList<string> Diagnostics { get; }
+
+    public SyntaxTree(ExpressionSyntax root, SyntaxToken endOfFileToken, IEnumerable<string> diagnostics)
     {
-        Diagnostics = diagnostics.ToArray();
         Root = root;
         EndOfFileToken = endOfFileToken;
+        Diagnostics = diagnostics.ToArray();
     }
 
     public static SyntaxTree Parse(string text)

@@ -3,7 +3,9 @@
 class Parser
 {
     private readonly SyntaxToken[] _tokens;
+
     private int _position;
+
     private List<string> _diagnostics = new();
 
     public Parser(string text)
@@ -34,7 +36,7 @@ class Parser
         ExpressionSyntax expression = ParseTerm();
         SyntaxToken endOfFileToken = Match(SyntaxKind.EndOfFileToken);
 
-        return new SyntaxTree(_diagnostics, expression, endOfFileToken);
+        return new SyntaxTree(expression, endOfFileToken, _diagnostics);
     }
 
     private SyntaxToken Peek(int offset = 0)
@@ -79,7 +81,7 @@ class Parser
         while (Current.Kind == SyntaxKind.PlusToken || Current.Kind == SyntaxKind.MinusToken)
         {
             SyntaxToken operatorToken = NextToken();
-            ExpressionSyntax? right = ParsePrimaryExpression();
+            ExpressionSyntax right = ParsePrimaryExpression();
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         }
 
@@ -93,7 +95,7 @@ class Parser
         while (Current.Kind == SyntaxKind.StarToken || Current.Kind == SyntaxKind.SlashToken)
         {
             SyntaxToken operatorToken = NextToken();
-            ExpressionSyntax? right = ParsePrimaryExpression();
+            ExpressionSyntax right = ParsePrimaryExpression();
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         }
 
@@ -104,14 +106,14 @@ class Parser
     {
         if (Current.Kind == SyntaxKind.OpenParenthesisToken)
         {
-            var left = NextToken();
-            var expression = ParseExpression();
-            var right = Match(SyntaxKind.CloseParenthesisToken);
+            SyntaxToken left = NextToken();
+            ExpressionSyntax expression = ParseExpression();
+            SyntaxToken right = Match(SyntaxKind.CloseParenthesisToken);
 
             return new ParenthesizedExpressionSyntax(left, expression, right);
         }
 
-        SyntaxToken? numberToken = Match(SyntaxKind.NumberToken);
+        SyntaxToken numberToken = Match(SyntaxKind.NumberToken);
 
         return new NumberExpressionSyntax(numberToken);
     }
