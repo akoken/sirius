@@ -15,7 +15,7 @@ sealed class SyntaxTree
 
     public static SyntaxTree Parse(string text)
     {
-        var parser = new Parser(text);
+        Parser parser = new(text);
         return parser.Parse();
     }
 }

@@ -1,13 +1,13 @@
 ﻿namespace Sirius.CodeAnalysis;
 
-sealed class NumberExpressionSyntax : ExpressionSyntax
+public sealed class NumberExpressionSyntax : ExpressionSyntax
 {
+    public SyntaxToken NumberToken { get; }
+
     public NumberExpressionSyntax(SyntaxToken numberToken)
     {
         NumberToken = numberToken;
     }
-
-    public SyntaxToken NumberToken { get; }
 
     public override SyntaxKind Kind => NumberToken.Kind;
 

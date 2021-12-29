@@ -1,6 +1,6 @@
 ﻿namespace Sirius.CodeAnalysis;
 
-class Evaluator
+public class Evaluator
 {
     private readonly ExpressionSyntax _root;
 
@@ -23,19 +23,22 @@ class Evaluator
 
         if (node is BinaryExpressionSyntax b)
         {
-            var left = EvaluateExression(b.Left);
-            var right = EvaluateExression(b.Right);
+            int left = EvaluateExression(b.Left);
+            int right = EvaluateExression(b.Right);
 
-            if (b.OperatorToken.Kind == SyntaxKind.PlusToken)
-                return left + right;
-            else if (b.OperatorToken.Kind == SyntaxKind.MinusToken)
-                return left - right;
-            else if (b.OperatorToken.Kind == SyntaxKind.StarToken)
-                return left * right;
-            else if (b.OperatorToken.Kind == SyntaxKind.SlashToken)
-                return left / right;
-            else
-                throw new Exception($"Unexpected binary operator {b.OperatorToken.Kind}");
+            switch (b.OperatorToken.Kind)
+            {
+                case SyntaxKind.PlusToken:
+                    return left + right;
+                case SyntaxKind.MinusToken:
+                    return left - right;
+                case SyntaxKind.StarToken:
+                    return left * right;
+                case SyntaxKind.SlashToken:
+                    return left / right;
+                default:
+                    throw new Exception($"Unexpected binary operator {b.OperatorToken.Kind}");
+            }
         }
 
         if (node is ParenthesizedExpressionSyntax p)

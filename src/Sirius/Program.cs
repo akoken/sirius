@@ -18,7 +18,7 @@ class Program
             if (line == "#showTree")
             {
                 showTree = !showTree;
-                Console.WriteLine(showTree ? "Showing parse trees." : "Not showing parse trees.");
+                Console.WriteLine(showTree ? "Showing parse trees..." : "Not showing parse trees...");
                 continue;
             }
             else if (line == "#cls")
@@ -27,7 +27,7 @@ class Program
                 continue;
             }
 
-            var syntaxTree = SyntaxTree.Parse(line);
+            SyntaxTree syntaxTree = SyntaxTree.Parse(line);
 
             if (showTree)
             {
@@ -74,7 +74,7 @@ class Program
 
         indent += isLast ? "    " : "│   ";
 
-        var lastChild = node.GetChildren().LastOrDefault();
+        SyntaxNode lastChild = node.GetChildren().LastOrDefault();
 
         foreach (var child in node.GetChildren())
         {
