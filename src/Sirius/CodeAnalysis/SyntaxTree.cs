@@ -1,6 +1,6 @@
 ﻿namespace Sirius.CodeAnalysis;
 
-sealed class SyntaxTree
+public sealed class SyntaxTree
 {
     public ExpressionSyntax Root { get; }
 
