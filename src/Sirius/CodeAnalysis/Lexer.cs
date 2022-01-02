@@ -26,7 +26,7 @@ internal sealed class Lexer
         _text = text;
     }
 
-    public SyntaxToken NextToken()
+    public SyntaxToken Lex()
     {
         if (_position >= _text.Length)
         {
