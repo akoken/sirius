@@ -16,9 +16,9 @@ public sealed class Evaluator
 
     private int EvaluateExression(ExpressionSyntax node)
     {
-        if (node is NumberExpressionSyntax n)
+        if (node is LiteralExpressionSyntax n)
         {
-            return (int)n.NumberToken.Value;
+            return (int)n.LiteralToken.Value;
         }
 
         if (node is BinaryExpressionSyntax b)

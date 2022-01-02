@@ -85,7 +85,7 @@ internal sealed class Parser
 
         SyntaxToken numberToken = MatchToken(SyntaxKind.NumberToken);
 
-        return new NumberExpressionSyntax(numberToken);
+        return new LiteralExpressionSyntax(numberToken);
     }
 
     private SyntaxToken Peek(int offset = 0)
