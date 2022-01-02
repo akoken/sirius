@@ -1,6 +1,6 @@
 ﻿namespace Sirius.CodeAnalysis;
 
-public class Evaluator
+public sealed class Evaluator
 {
     private readonly ExpressionSyntax _root;
 

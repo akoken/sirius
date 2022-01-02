@@ -2,9 +2,9 @@
 
 namespace Sirius;
 
-class Program
+internal static class Program
 {
-    static void Main(string[] args)
+    private static void Main()
     {
         bool showTree = false;
         while (true)
@@ -31,10 +31,9 @@ class Program
 
             if (showTree)
             {
-                var color = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 PrettyPrint(syntaxTree.Root);
-                Console.ForegroundColor = color;
+                Console.ResetColor();
             }
 
             if (!syntaxTree.Diagnostics.Any())
@@ -45,13 +44,12 @@ class Program
             }
             else
             {
-                var color = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 foreach (var diagnostic in syntaxTree.Diagnostics)
                 {
                     Console.WriteLine(diagnostic);
                 }
-                Console.ForegroundColor = color;
+                Console.ResetColor();
             }
         }
     }
@@ -72,7 +70,7 @@ class Program
 
         Console.WriteLine();
 
-        indent += isLast ? "    " : "│   ";
+        indent += isLast ? "   " : "│   ";
 
         SyntaxNode lastChild = node.GetChildren().LastOrDefault();
 
