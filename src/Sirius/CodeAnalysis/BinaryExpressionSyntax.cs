@@ -15,7 +15,7 @@ public sealed class BinaryExpressionSyntax : ExpressionSyntax
         Right = right;
     }
 
-    public override SyntaxKind Kind => SyntaxKind.BinaryExpressionToken;
+    public override SyntaxKind Kind => SyntaxKind.BinaryExpression;
 
     public override IEnumerable<SyntaxNode> GetChildren()
     {

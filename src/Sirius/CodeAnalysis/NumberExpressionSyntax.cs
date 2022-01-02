@@ -9,7 +9,7 @@ public sealed class NumberExpressionSyntax : ExpressionSyntax
         NumberToken = numberToken;
     }
 
-    public override SyntaxKind Kind => NumberToken.Kind;
+    public override SyntaxKind Kind => SyntaxKind.NumberExpression;
 
     public override IEnumerable<SyntaxNode> GetChildren()
     {

@@ -33,40 +33,10 @@ internal sealed class Parser
 
     public SyntaxTree Parse()
     {
-        ExpressionSyntax expression = ParseTerm();
-        SyntaxToken endOfFileToken = Match(SyntaxKind.EndOfFileToken);
+        ExpressionSyntax expression = ParseExpression();
+        SyntaxToken endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
 
         return new SyntaxTree(expression, endOfFileToken, _diagnostics);
-    }
-
-    private SyntaxToken Peek(int offset = 0)
-    {
-        int index = _position + offset;
-        if (index >= _tokens.Length)
-        {
-            return _tokens[_tokens.Length - 1];
-        }
-
-        return _tokens[index];
-    }
-
-    private SyntaxToken NextToken()
-    {
-        var current = Current;
-        _position++;
-        return current;
-    }
-
-    private SyntaxToken Match(SyntaxKind kind)
-    {
-        if (Current.Kind == kind)
-        {
-            return NextToken();
-        }
-
-        _diagnostics.Add($"Error: Unexpected token <{Current.Kind}>, expected <{kind}>");
-
-        return new SyntaxToken(kind, Current.Position, null, null);
     }
 
     private ExpressionSyntax ParseExpression()
@@ -108,13 +78,43 @@ internal sealed class Parser
         {
             SyntaxToken left = NextToken();
             ExpressionSyntax expression = ParseExpression();
-            SyntaxToken right = Match(SyntaxKind.CloseParenthesisToken);
+            SyntaxToken right = MatchToken(SyntaxKind.CloseParenthesisToken);
 
             return new ParenthesizedExpressionSyntax(left, expression, right);
         }
 
-        SyntaxToken numberToken = Match(SyntaxKind.NumberToken);
+        SyntaxToken numberToken = MatchToken(SyntaxKind.NumberToken);
 
         return new NumberExpressionSyntax(numberToken);
+    }
+
+    private SyntaxToken Peek(int offset = 0)
+    {
+        int index = _position + offset;
+        if (index >= _tokens.Length)
+        {
+            return _tokens[_tokens.Length - 1];
+        }
+
+        return _tokens[index];
+    }
+
+    private SyntaxToken NextToken()
+    {
+        var current = Current;
+        _position++;
+        return current;
+    }
+
+    private SyntaxToken MatchToken(SyntaxKind kind)
+    {
+        if (Current.Kind == kind)
+        {
+            return NextToken();
+        }
+
+        _diagnostics.Add($"Error: Unexpected token <{Current.Kind}>, expected <{kind}>");
+
+        return new SyntaxToken(kind, Current.Position, null, null);
     }
 }
