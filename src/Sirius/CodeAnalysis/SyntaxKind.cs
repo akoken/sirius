@@ -12,7 +12,7 @@ public enum SyntaxKind
     SlashToken = 7,
     OpenParenthesisToken = 8,
     CloseParenthesisToken = 9,
-    NumberExpression = 10,
+    LiteralExpression = 10,
     BinaryExpression = 11,
     ParenthesizedExpression = 12
 }
