@@ -39,37 +39,36 @@ internal sealed class Parser
         return new SyntaxTree(expression, endOfFileToken, _diagnostics);
     }
 
-    private ExpressionSyntax ParseExpression()
-    {
-        return ParseTerm();
-    }
-
-    private ExpressionSyntax ParseTerm()
-    {
-        ExpressionSyntax left = ParseFactor();
-
-        while (Current.Kind == SyntaxKind.PlusToken || Current.Kind == SyntaxKind.MinusToken)
-        {
-            SyntaxToken operatorToken = NextToken();
-            ExpressionSyntax right = ParsePrimaryExpression();
-            left = new BinaryExpressionSyntax(left, operatorToken, right);
-        }
-
-        return left;
-    }
-
-    private ExpressionSyntax ParseFactor()
+    private ExpressionSyntax ParseExpression(int parentPrecedence = 0)
     {
         ExpressionSyntax left = ParsePrimaryExpression();
-
-        while (Current.Kind == SyntaxKind.StarToken || Current.Kind == SyntaxKind.SlashToken)
+        while (true)
         {
+            int precedence = GetBinaryOperatorPrecedence(Current.Kind);
+            if (precedence == 0 || precedence <= parentPrecedence)
+                break;
+
             SyntaxToken operatorToken = NextToken();
-            ExpressionSyntax right = ParsePrimaryExpression();
+            ExpressionSyntax right = ParseExpression();
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         }
 
         return left;
+    }
+
+    private static int GetBinaryOperatorPrecedence(SyntaxKind kind)
+    {
+        switch (kind)
+        {
+            case SyntaxKind.StarToken:
+            case SyntaxKind.SlashToken:
+                return 2;
+            case SyntaxKind.PlusToken:
+            case SyntaxKind.MinusToken:
+                return 1;
+            default:
+                return 0;
+        }
     }
 
     private ExpressionSyntax ParsePrimaryExpression()
