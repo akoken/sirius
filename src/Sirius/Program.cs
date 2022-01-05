@@ -13,7 +13,9 @@ internal static class Program
 
             string line = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(line))
+            {
                 return;
+            }
 
             if (line == "#showTree")
             {
