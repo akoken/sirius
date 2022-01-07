@@ -1,4 +1,4 @@
-﻿namespace Sirius.CodeAnalysis;
+﻿namespace Sirius.CodeAnalysis.Syntax;
 
 public sealed class LiteralExpressionSyntax : ExpressionSyntax
 {

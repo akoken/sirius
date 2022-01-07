@@ -1,4 +1,6 @@
-﻿namespace Sirius.CodeAnalysis;
+﻿using Sirius.CodeAnalysis.Syntax;
+
+namespace Sirius.CodeAnalysis;
 
 public sealed class Evaluator
 {
