@@ -1,4 +1,5 @@
 ﻿using Sirius.CodeAnalysis;
+using Sirius.CodeAnalysis.Binding;
 using Sirius.CodeAnalysis.Syntax;
 
 namespace Sirius;
@@ -31,6 +32,9 @@ internal static class Program
             }
 
             SyntaxTree syntaxTree = SyntaxTree.Parse(line);
+            var binder = new Binder();
+            var boundExpression = binder.BindExpression(syntaxTree.Root);
+            var diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
 
             if (showTree)
             {
@@ -39,9 +43,9 @@ internal static class Program
                 Console.ResetColor();
             }
 
-            if (!syntaxTree.Diagnostics.Any())
+            if (!diagnostics.Any())
             {
-                var evaluator = new Evaluator(syntaxTree.Root);
+                var evaluator = new Evaluator(boundExpression);
                 var result = evaluator.Evaluate();
                 Console.WriteLine(result);
             }
