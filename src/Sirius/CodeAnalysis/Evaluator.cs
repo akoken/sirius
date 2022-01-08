@@ -25,13 +25,15 @@ internal sealed class Evaluator
 
         if (node is BoundUnaryExpression u)
         {
-            int operand = (int)EvaluateExression(u.Operand);
+            var operand = EvaluateExression(u.Operand);
             switch (u.OperatorKind)
             {
                 case BoundUnaryOperatorKind.Identity:
-                    return operand;
+                    return (int)operand;
                 case BoundUnaryOperatorKind.Negation:
-                    return -operand;
+                    return -(int)operand;
+                case BoundUnaryOperatorKind.LogicalNegation:
+                    return !(bool)operand;
                 default:
                     throw new Exception($"Unexpected unary operator {u.OperatorKind}");
             }
@@ -39,19 +41,23 @@ internal sealed class Evaluator
 
         if (node is BoundBinaryExpression b)
         {
-            int left = (int)EvaluateExression(b.Left);
-            int right = (int)EvaluateExression(b.Right);
+            var left = EvaluateExression(b.Left);
+            var right = EvaluateExression(b.Right);
 
             switch (b.OperatorKind)
             {
                 case BoundBinaryOperatorKind.Addition:
-                    return left + right;
+                    return (int)left + (int)right;
                 case BoundBinaryOperatorKind.Substraction:
-                    return left - right;
+                    return (int)left - (int)right;
                 case BoundBinaryOperatorKind.Multiplication:
-                    return left * right;
+                    return (int)left * (int)right;
                 case BoundBinaryOperatorKind.Division:
-                    return left / right;
+                    return (int)left / (int)right;
+                case BoundBinaryOperatorKind.LogicalAnd:
+                    return (bool)left && (bool)right;
+                case BoundBinaryOperatorKind.LogicalOr:
+                    return (bool)left || (bool)right;
                 default:
                     throw new Exception($"Unexpected binary operator {b.OperatorKind}");
             }
