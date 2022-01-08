@@ -13,15 +13,15 @@ public enum SyntaxKind
     SlashToken = 7,
     OpenParenthesisToken = 8,
     CloseParenthesisToken = 9,
-    IdentifierToken = 16,
+    IdentifierToken = 10,
 
     // Keywords
-    TrueKeyword = 14,
-    FalseKeyword = 15,
+    TrueKeyword = 11,
+    FalseKeyword = 12,
 
     // Expressions
-    LiteralExpression = 10,
-    BinaryExpression = 11,
-    ParenthesizedExpression = 12,
-    UnaryExpression = 13
+    LiteralExpression = 13,
+    BinaryExpression = 14,
+    ParenthesizedExpression = 15,
+    UnaryExpression = 16
 }
