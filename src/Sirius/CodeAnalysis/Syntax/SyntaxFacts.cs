@@ -28,4 +28,17 @@ internal static class SyntaxFacts
                 return 0;
         }
     }
+
+    internal static SyntaxKind GetKeywordKind(string text)
+    {
+        switch (text)
+        {
+            case "true":
+                return SyntaxKind.TrueKeyword;
+            case "false":
+                return SyntaxKind.FalseKeyword;
+            default:
+                return SyntaxKind.IdentifierToken;
+        }
+    }
 }

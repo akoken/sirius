@@ -67,6 +67,22 @@ internal sealed class Lexer
             return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, null);
         }
 
+        if (char.IsLetter(Current))
+        {
+            int start = _position;
+
+            while (char.IsLetter(Current))
+            {
+                Next();
+            }
+
+            int length = _position - start;
+            string text = _text.Substring(start, length);
+            SyntaxKind kind = SyntaxFacts.GetKeywordKind(text);
+
+            return new SyntaxToken(kind, start, text, null);
+        }
+
         switch (Current)
         {
             case '+': return new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null);

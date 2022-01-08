@@ -2,6 +2,7 @@
 
 public enum SyntaxKind
 {
+    // Tokens
     InvalidToken = 0,
     EndOfFileToken = 1,
     WhitespaceToken = 2,
@@ -12,6 +13,13 @@ public enum SyntaxKind
     SlashToken = 7,
     OpenParenthesisToken = 8,
     CloseParenthesisToken = 9,
+    IdentifierToken = 16,
+
+    // Keywords
+    TrueKeyword = 14,
+    FalseKeyword = 15,
+
+    // Expressions
     LiteralExpression = 10,
     BinaryExpression = 11,
     ParenthesizedExpression = 12,

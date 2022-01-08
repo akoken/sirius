@@ -70,18 +70,32 @@ internal sealed class Parser
 
     private ExpressionSyntax ParsePrimaryExpression()
     {
-        if (Current.Kind == SyntaxKind.OpenParenthesisToken)
+        switch (Current.Kind)
         {
-            SyntaxToken left = NextToken();
-            ExpressionSyntax expression = ParseExpression();
-            SyntaxToken right = MatchToken(SyntaxKind.CloseParenthesisToken);
+            case SyntaxKind.OpenParenthesisToken:
+                {
+                    SyntaxToken left = NextToken();
+                    ExpressionSyntax expression = ParseExpression();
+                    SyntaxToken right = MatchToken(SyntaxKind.CloseParenthesisToken);
 
-            return new ParenthesizedExpressionSyntax(left, expression, right);
+                    return new ParenthesizedExpressionSyntax(left, expression, right);
+                }
+
+            case SyntaxKind.TrueKeyword:
+            case SyntaxKind.FalseKeyword:
+                {
+                    SyntaxToken keywordToken = NextToken();
+                    bool value = Current.Kind == SyntaxKind.TrueKeyword;
+
+                    return new LiteralExpressionSyntax(keywordToken, value);
+                }
+            default:
+                {
+                    SyntaxToken numberToken = MatchToken(SyntaxKind.NumberToken);
+
+                    return new LiteralExpressionSyntax(numberToken);
+                }
         }
-
-        SyntaxToken numberToken = MatchToken(SyntaxKind.NumberToken);
-
-        return new LiteralExpressionSyntax(numberToken);
     }
 
     private SyntaxToken Peek(int offset = 0)

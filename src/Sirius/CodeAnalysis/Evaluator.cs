@@ -11,21 +11,21 @@ internal sealed class Evaluator
         _root = root;
     }
 
-    public int Evaluate()
+    public object Evaluate()
     {
         return EvaluateExression(_root);
     }
 
-    private int EvaluateExression(BoundExpression node)
+    private object EvaluateExression(BoundExpression node)
     {
         if (node is BoundLiteralExpression n)
         {
-            return (int)n.Value;
+            return n.Value;
         }
 
         if (node is BoundUnaryExpression u)
         {
-            int operand = EvaluateExression(u.Operand);
+            int operand = (int)EvaluateExression(u.Operand);
             switch (u.OperatorKind)
             {
                 case BoundUnaryOperatorKind.Identity:
@@ -39,8 +39,8 @@ internal sealed class Evaluator
 
         if (node is BoundBinaryExpression b)
         {
-            int left = EvaluateExression(b.Left);
-            int right = EvaluateExression(b.Right);
+            int left = (int)EvaluateExression(b.Left);
+            int right = (int)EvaluateExression(b.Right);
 
             switch (b.OperatorKind)
             {
