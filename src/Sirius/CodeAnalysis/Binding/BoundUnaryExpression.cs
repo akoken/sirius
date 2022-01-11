@@ -2,7 +2,7 @@
 {
     internal sealed class BoundUnaryExpression : BoundExpression
     {
-        public BoundUnaryOperatorKind OperatorKind { get; }
+        public BoundUnaryOperator Op { get; }
 
         public BoundExpression Operand { get; }
 
@@ -10,9 +10,9 @@
 
         public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
 
-        public BoundUnaryExpression(BoundUnaryOperatorKind operatorKind, BoundExpression operand)
+        public BoundUnaryExpression(BoundUnaryOperator op, BoundExpression operand)
         {
-            OperatorKind = operatorKind;
+            Op = op;
             Operand = operand;
         }
     }
