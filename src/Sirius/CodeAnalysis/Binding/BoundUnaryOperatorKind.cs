@@ -1,9 +1,8 @@
-﻿namespace Sirius.CodeAnalysis.Binding
+﻿namespace Sirius.CodeAnalysis.Binding;
+
+internal enum BoundUnaryOperatorKind
 {
-    internal enum BoundUnaryOperatorKind
-    {
-        Identity,
-        Negation,
-        LogicalNegation
-    }
+    Identity,
+    Negation,
+    LogicalNegation
 }

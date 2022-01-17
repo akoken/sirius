@@ -1,12 +1,16 @@
 ﻿using Sirius.CodeAnalysis.Syntax;
 
 namespace Sirius.CodeAnalysis.Binding;
+
 internal sealed class BoundUnaryOperator
 {
-    private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, Type operandType)
-        : this(syntaxKind, kind, operandType, operandType)
-    {
-    }
+    public Type OperandType { get; }
+
+    public Type Type { get; }
+
+    public SyntaxKind SyntaxKind { get; }
+
+    public BoundUnaryOperatorKind Kind { get; }
 
     private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, Type operandType, Type resultType)
     {
@@ -16,18 +20,10 @@ internal sealed class BoundUnaryOperator
         Type = resultType;
     }
 
-    public SyntaxKind SyntaxKind { get; }
-    public BoundUnaryOperatorKind Kind { get; }
-    public Type OperandType { get; }
-    public Type Type { get; }
-
-    private static BoundUnaryOperator[] _operators =
+    private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, Type operandType)
+       : this(syntaxKind, kind, operandType, operandType)
     {
-            new BoundUnaryOperator(SyntaxKind.BangToken, BoundUnaryOperatorKind.LogicalNegation, typeof(bool)),
-
-            new BoundUnaryOperator(SyntaxKind.PlusToken, BoundUnaryOperatorKind.Identity, typeof(int)),
-            new BoundUnaryOperator(SyntaxKind.MinusToken, BoundUnaryOperatorKind.Negation, typeof(int)),
-        };
+    }
 
     public static BoundUnaryOperator Bind(SyntaxKind syntaxKind, Type operandType)
     {
@@ -39,4 +35,11 @@ internal sealed class BoundUnaryOperator
 
         return null;
     }
+
+    private static BoundUnaryOperator[] _operators =
+    {
+            new BoundUnaryOperator(SyntaxKind.BangToken, BoundUnaryOperatorKind.LogicalNegation, typeof(bool)),
+            new BoundUnaryOperator(SyntaxKind.PlusToken, BoundUnaryOperatorKind.Identity, typeof(int)),
+            new BoundUnaryOperator(SyntaxKind.MinusToken, BoundUnaryOperatorKind.Negation, typeof(int)),
+    };
 }

@@ -1,9 +1,8 @@
-﻿namespace Sirius.CodeAnalysis.Binding
+﻿namespace Sirius.CodeAnalysis.Binding;
+
+internal enum BoundNodeKind
 {
-    internal enum BoundNodeKind
-    {
-        UnaryExpression,
-        LiteralExpression,
-        BinaryExpression
-    }
+    UnaryExpression,
+    LiteralExpression,
+    BinaryExpression
 }
