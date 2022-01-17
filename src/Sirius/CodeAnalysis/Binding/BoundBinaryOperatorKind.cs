@@ -1,12 +1,12 @@
-﻿namespace Sirius.CodeAnalysis.Binding
+﻿namespace Sirius.CodeAnalysis.Binding;
+internal enum BoundBinaryOperatorKind
 {
-    internal enum BoundBinaryOperatorKind
-    {
-        Addition,
-        Substraction,
-        Multiplication,
-        Division,
-        LogicalAnd,
-        LogicalOr
-    }
+    Addition,
+    Substraction,
+    Multiplication,
+    Division,
+    LogicalAnd,
+    LogicalOr,
+    Equals,
+    NotEquals
 }

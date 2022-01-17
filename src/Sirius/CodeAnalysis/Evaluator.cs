@@ -13,19 +13,18 @@ internal sealed class Evaluator
 
     public object Evaluate()
     {
-        return EvaluateExression(_root);
+        return EvaluateExpression(_root);
     }
 
-    private object EvaluateExression(BoundExpression node)
+    private object EvaluateExpression(BoundExpression node)
     {
         if (node is BoundLiteralExpression n)
-        {
             return n.Value;
-        }
 
         if (node is BoundUnaryExpression u)
         {
-            var operand = EvaluateExression(u.Operand);
+            var operand = EvaluateExpression(u.Operand);
+
             switch (u.Op.Kind)
             {
                 case BoundUnaryOperatorKind.Identity:
@@ -41,8 +40,8 @@ internal sealed class Evaluator
 
         if (node is BoundBinaryExpression b)
         {
-            var left = EvaluateExression(b.Left);
-            var right = EvaluateExression(b.Right);
+            var left = EvaluateExpression(b.Left);
+            var right = EvaluateExpression(b.Right);
 
             switch (b.Op.Kind)
             {
@@ -58,6 +57,10 @@ internal sealed class Evaluator
                     return (bool)left && (bool)right;
                 case BoundBinaryOperatorKind.LogicalOr:
                     return (bool)left || (bool)right;
+                case BoundBinaryOperatorKind.Equals:
+                    return Equals(left, right);
+                case BoundBinaryOperatorKind.NotEquals:
+                    return !Equals(left, right);
                 default:
                     throw new Exception($"Unexpected binary operator {b.Op}");
             }

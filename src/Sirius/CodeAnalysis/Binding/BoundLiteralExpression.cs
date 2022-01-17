@@ -1,16 +1,12 @@
-﻿namespace Sirius.CodeAnalysis.Binding
+﻿namespace Sirius.CodeAnalysis.Binding;
+internal sealed class BoundLiteralExpression : BoundExpression
 {
-    internal sealed class BoundLiteralExpression : BoundExpression
+    public BoundLiteralExpression(object value)
     {
-        public object Value { get; }
-
-        public override Type Type => Value.GetType();
-
-        public override BoundNodeKind Kind => BoundNodeKind.LiteralExpression;
-
-        public BoundLiteralExpression(object value)
-        {
-            Value = value;
-        }
+        Value = value;
     }
+
+    public override BoundNodeKind Kind => BoundNodeKind.LiteralExpression;
+    public override Type Type => Value.GetType();
+    public object Value { get; }
 }

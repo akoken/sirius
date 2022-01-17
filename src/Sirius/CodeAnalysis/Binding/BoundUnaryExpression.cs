@@ -1,19 +1,14 @@
-﻿namespace Sirius.CodeAnalysis.Binding
+﻿namespace Sirius.CodeAnalysis.Binding;
+internal sealed class BoundUnaryExpression : BoundExpression
 {
-    internal sealed class BoundUnaryExpression : BoundExpression
+    public BoundUnaryExpression(BoundUnaryOperator op, BoundExpression operand)
     {
-        public BoundUnaryOperator Op { get; }
-
-        public BoundExpression Operand { get; }
-
-        public override Type Type => Operand.Type;
-
-        public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
-
-        public BoundUnaryExpression(BoundUnaryOperator op, BoundExpression operand)
-        {
-            Op = op;
-            Operand = operand;
-        }
+        Op = op;
+        Operand = operand;
     }
+
+    public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
+    public override Type Type => Op.Type;
+    public BoundUnaryOperator Op { get; }
+    public BoundExpression Operand { get; }
 }
