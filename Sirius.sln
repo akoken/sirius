@@ -5,6 +5,8 @@ VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sirius", "src\Sirius\Sirius.csproj", "{6EE7ACA6-6FB0-4D8C-9FC6-7BCAE184C059}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sirius.Tool", "src\Sirius.Tool\Sirius.Tool.csproj", "{D8AAC383-D937-4F55-87BD-35812A9BB72B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{6EE7ACA6-6FB0-4D8C-9FC6-7BCAE184C059}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EE7ACA6-6FB0-4D8C-9FC6-7BCAE184C059}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EE7ACA6-6FB0-4D8C-9FC6-7BCAE184C059}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8AAC383-D937-4F55-87BD-35812A9BB72B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8AAC383-D937-4F55-87BD-35812A9BB72B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8AAC383-D937-4F55-87BD-35812A9BB72B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8AAC383-D937-4F55-87BD-35812A9BB72B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
