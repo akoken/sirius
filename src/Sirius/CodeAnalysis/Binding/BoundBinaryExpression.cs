@@ -15,7 +15,7 @@
             Right = right;
         }
 
-        public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
+        public override BoundNodeKind Kind => BoundNodeKind.BinaryExpression;
         public override Type Type => Op.Type;
     }
 }

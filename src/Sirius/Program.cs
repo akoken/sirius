@@ -77,7 +77,7 @@ internal static class Program
 
         Console.WriteLine();
 
-        indent += isLast ? "   " : "│   ";
+        indent += isLast ? " " : "│ ";
 
         SyntaxNode lastChild = node.GetChildren().LastOrDefault();
 
