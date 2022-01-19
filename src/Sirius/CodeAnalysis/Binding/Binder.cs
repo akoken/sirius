@@ -4,9 +4,9 @@ namespace Sirius.CodeAnalysis.Binding;
 
 internal sealed class Binder
 {
-    private readonly List<string> _diagnostics = new();
+    private readonly DiagnosticBag _diagnostics = new();
 
-    public IEnumerable<string> Diagnostics => _diagnostics;
+    public DiagnosticBag Diagnostics => _diagnostics;
 
     public BoundExpression BindExpression(ExpressionSyntax syntax)
     {
@@ -32,7 +32,7 @@ internal sealed class Binder
 
         if (boundOperator is null)
         {
-            _diagnostics.Add($"Unary operator '{syntax.OperatorToken.Text}' is not defined for type {boundOperand.Type}");
+            _diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
             return boundOperand;
         }
 
@@ -47,7 +47,7 @@ internal sealed class Binder
 
         if (boundOperator == null)
         {
-            _diagnostics.Add($"Binary operator '{syntax.OperatorToken.Text}' is not defined for types {boundLeft.Type} and {boundRight.Type}.");
+            _diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
             return boundLeft;
         }
 

@@ -6,9 +6,9 @@ public sealed class SyntaxTree
 
     public SyntaxToken EndOfFileToken { get; }
 
-    public IReadOnlyList<string> Diagnostics { get; }
+    public IReadOnlyList<Diagnostic> Diagnostics { get; }
 
-    public SyntaxTree(ExpressionSyntax root, SyntaxToken endOfFileToken, IEnumerable<string> diagnostics)
+    public SyntaxTree(ExpressionSyntax root, SyntaxToken endOfFileToken, IEnumerable<Diagnostic> diagnostics)
     {
         Root = root;
         EndOfFileToken = endOfFileToken;

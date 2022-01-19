@@ -33,7 +33,7 @@ internal static class Program
             SyntaxTree syntaxTree = SyntaxTree.Parse(line);
             var compilation = new Compilation(syntaxTree);
             EvaluationResult result = compilation.Evaluate();
-            IReadOnlyList<string> diagnostics = result.Diagnostics;
+            IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
 
             if (showTree)
             {
