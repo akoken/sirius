@@ -48,12 +48,30 @@ internal static class Program
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.DarkRed;
                 foreach (var diagnostic in diagnostics)
                 {
+                    Console.WriteLine();
+
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.WriteLine(diagnostic);
+                    Console.ResetColor();
+
+                    var prefix = line.Substring(0, diagnostic.Span.Start);
+                    var error = line.Substring(diagnostic.Span.Start, diagnostic.Span.Length);
+                    var suffix = line.Substring(diagnostic.Span.End);
+
+                    Console.Write("    ");
+                    Console.Write(prefix);
+
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.WriteLine(error);
+                    Console.ResetColor();
+
+                    Console.Write(suffix);
+                    Console.WriteLine();
                 }
-                Console.ResetColor();
+
+                Console.WriteLine();
             }
         }
     }
