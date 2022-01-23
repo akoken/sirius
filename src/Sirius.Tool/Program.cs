@@ -64,7 +64,7 @@ internal static class Program
                     Console.Write(prefix);
 
                     Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine(error);
+                    Console.Write(error);
                     Console.ResetColor();
 
                     Console.Write(suffix);
