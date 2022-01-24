@@ -8,6 +8,7 @@ internal static class Program
     private static void Main()
     {
         bool showTree = false;
+        var variables = new Dictionary<string, object>();
         while (true)
         {
             Console.Write(">");
@@ -32,7 +33,7 @@ internal static class Program
 
             SyntaxTree syntaxTree = SyntaxTree.Parse(line);
             var compilation = new Compilation(syntaxTree);
-            EvaluationResult result = compilation.Evaluate();
+            EvaluationResult result = compilation.Evaluate(variables);
             IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
 
             if (showTree)

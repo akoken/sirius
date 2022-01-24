@@ -52,4 +52,10 @@ internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
         var diagnostic = new Diagnostic(span, message);
         _diagnostics.Add(diagnostic);
     }
+
+    public void ReportUndefinedName(TextSpan span, string name)
+    {
+        var message = $"Variable '{name}' does not exist.";
+        Report(span, message);
+    }
 }
