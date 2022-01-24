@@ -26,7 +26,9 @@ public enum SyntaxKind
 
     // Expressions
     LiteralExpression,
+    NameExpression,
+    UnaryExpression,
     BinaryExpression,
     ParenthesizedExpression,
-    UnaryExpression,
+    AssignmentExpression,
 }
