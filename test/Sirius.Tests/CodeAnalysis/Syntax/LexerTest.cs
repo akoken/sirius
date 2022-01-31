@@ -28,9 +28,30 @@ namespace Sirius.Tests.CodeAnalysis.Syntax
         private static IEnumerable<(SyntaxKind kind, string text)> GetTokens()
         {
             return new[]
-            {
+           {
+                (SyntaxKind.PlusToken, "+"),
+                (SyntaxKind.MinusToken, "-"),
+                (SyntaxKind.StarToken, "*"),
+                (SyntaxKind.SlashToken, "/"),
+                (SyntaxKind.BangToken, "!"),
+                (SyntaxKind.EqualsToken, "="),
+                (SyntaxKind.AmpersandAmpersandToken, "&&"),
+                (SyntaxKind.PipePipeToken, "||"),
+                (SyntaxKind.EqualsEqualsToken, "=="),
+                (SyntaxKind.BangEqualsToken, "!="),
+                (SyntaxKind.OpenParenthesisToken, "("),
+                (SyntaxKind.CloseParenthesisToken, ")"),
+                (SyntaxKind.TrueKeyword, "true"),
+                (SyntaxKind.FalseKeyword, "false"),
                 (SyntaxKind.IdentifierToken, "a"),
-                (SyntaxKind.IdentifierToken, "abcd")
+                (SyntaxKind.IdentifierToken, "abcd"),
+                (SyntaxKind.WhitespaceToken, " "),
+                (SyntaxKind.WhitespaceToken, "  "),
+                (SyntaxKind.WhitespaceToken, "\r"),
+                (SyntaxKind.WhitespaceToken, "\n"),
+                (SyntaxKind.WhitespaceToken, "\r\n"),
+                (SyntaxKind.NumberToken, "1"),
+                (SyntaxKind.NumberToken, "333"),
             };
         }
     }
