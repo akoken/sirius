@@ -5,16 +5,16 @@ internal sealed class BoundBinaryOperator
 {
     public Type LeftType { get; }
 
-    public Type RightTye { get; }
+    public Type RightType { get; }
 
     public Type Type { get; }
 
-    private BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, Type leftType, Type rightTye, Type resultType)
+    private BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, Type leftType, Type rightType, Type resultType)
     {
         SyntaxKind = syntaxKind;
         Kind = kind;
         LeftType = leftType;
-        RightTye = rightTye;
+        RightType = rightType;
         Type = resultType;
     }
 
@@ -37,7 +37,7 @@ internal sealed class BoundBinaryOperator
     {
         foreach (var op in _operators)
         {
-            if (op.SyntaxKind == syntaxKind && op.LeftType == leftType && op.RightTye == rightType)
+            if (op.SyntaxKind == syntaxKind && op.LeftType == leftType && op.RightType == rightType)
                 return op;
         }
 
