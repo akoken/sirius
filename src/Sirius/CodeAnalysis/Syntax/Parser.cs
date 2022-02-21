@@ -2,9 +2,9 @@
 
 internal sealed class Parser
 {
+    private readonly DiagnosticBag _diagnostics = new();
     private readonly SyntaxToken[] _tokens;
 
-    private DiagnosticBag _diagnostics = new();
     private int _position;
 
     public Parser(string text)

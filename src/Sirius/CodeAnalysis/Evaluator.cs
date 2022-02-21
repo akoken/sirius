@@ -52,17 +52,13 @@ internal sealed class Evaluator
     {
         var operand = EvaluateExpression(u.Operand);
 
-        switch (u.Op.Kind)
+        return u.Op.Kind switch
         {
-            case BoundUnaryOperatorKind.Identity:
-                return (int)operand;
-            case BoundUnaryOperatorKind.Negation:
-                return -(int)operand;
-            case BoundUnaryOperatorKind.LogicalNegation:
-                return !(bool)operand;
-            default:
-                throw new Exception($"Unexpected unary operator {u.Op}");
-        }
+            BoundUnaryOperatorKind.Identity => (int)operand,
+            BoundUnaryOperatorKind.Negation => -(int)operand,
+            BoundUnaryOperatorKind.LogicalNegation => !(bool)operand,
+            _ => throw new Exception($"Unexpected unary operator {u.Op}"),
+        };
     }
 
     private object EvaluateBinaryExpression(BoundBinaryExpression b)
