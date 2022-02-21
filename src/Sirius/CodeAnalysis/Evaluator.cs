@@ -70,26 +70,17 @@ internal sealed class Evaluator
         var left = EvaluateExpression(b.Left);
         var right = EvaluateExpression(b.Right);
 
-        switch (b.Op.Kind)
+        return b.Op.Kind switch
         {
-            case BoundBinaryOperatorKind.Addition:
-                return (int)left + (int)right;
-            case BoundBinaryOperatorKind.Substraction:
-                return (int)left - (int)right;
-            case BoundBinaryOperatorKind.Multiplication:
-                return (int)left * (int)right;
-            case BoundBinaryOperatorKind.Division:
-                return (int)left / (int)right;
-            case BoundBinaryOperatorKind.LogicalAnd:
-                return (bool)left && (bool)right;
-            case BoundBinaryOperatorKind.LogicalOr:
-                return (bool)left || (bool)right;
-            case BoundBinaryOperatorKind.Equals:
-                return Equals(left, right);
-            case BoundBinaryOperatorKind.NotEquals:
-                return !Equals(left, right);
-            default:
-                throw new Exception($"Unexpected binary operator {b.Op}");
-        }
+            BoundBinaryOperatorKind.Addition => (int)left + (int)right,
+            BoundBinaryOperatorKind.Substraction => (int)left - (int)right,
+            BoundBinaryOperatorKind.Multiplication => (int)left * (int)right,
+            BoundBinaryOperatorKind.Division => (int)left / (int)right,
+            BoundBinaryOperatorKind.LogicalAnd => (bool)left && (bool)right,
+            BoundBinaryOperatorKind.LogicalOr => (bool)left || (bool)right,
+            BoundBinaryOperatorKind.Equals => Equals(left, right),
+            BoundBinaryOperatorKind.NotEquals => !Equals(left, right),
+            _ => throw new Exception($"Unexpected binary operator {b.Op}"),
+        };
     }
 }
