@@ -1,4 +1,6 @@
-﻿namespace Sirius.CodeAnalysis.Syntax;
+﻿using System.Collections.Immutable;
+
+namespace Sirius.CodeAnalysis.Syntax;
 
 public sealed class SyntaxTree
 {
@@ -6,13 +8,13 @@ public sealed class SyntaxTree
 
     public SyntaxToken EndOfFileToken { get; }
 
-    public IReadOnlyList<Diagnostic> Diagnostics { get; }
+    public ImmutableArray<Diagnostic> Diagnostics { get; }
 
-    public SyntaxTree(ExpressionSyntax root, SyntaxToken endOfFileToken, IEnumerable<Diagnostic> diagnostics)
+    public SyntaxTree(ExpressionSyntax root, SyntaxToken endOfFileToken, ImmutableArray<Diagnostic> diagnostics)
     {
         Root = root;
         EndOfFileToken = endOfFileToken;
-        Diagnostics = diagnostics.ToArray();
+        Diagnostics = diagnostics;
     }
 
     public static SyntaxTree Parse(string text)
