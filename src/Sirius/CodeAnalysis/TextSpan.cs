@@ -13,4 +13,10 @@ public struct TextSpan
     public int Length { get; }
 
     public int End => Start + Length;
+
+    public static TextSpan FromBounds(int start, int end)
+    {
+        int length = end - start;
+        return new TextSpan(start, length);
+    }
 }

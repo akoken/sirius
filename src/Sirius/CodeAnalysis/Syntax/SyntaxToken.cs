@@ -10,7 +10,7 @@ public sealed class SyntaxToken : SyntaxNode
 
     public object Value { get; }
 
-    public TextSpan Span => new TextSpan(Position, Text.Length);
+    public override TextSpan Span => new TextSpan(Position, Text.Length);
 
     public SyntaxToken(SyntaxKind kind, int position, string text, object value)
     {
