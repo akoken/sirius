@@ -35,4 +35,39 @@ public abstract class SyntaxNode
             }
         }
     }
+
+    public void WriteTo(TextWriter textWriter) => PrettyPrint(textWriter, this);
+
+    public override string ToString()
+    {
+        using var writer = new StringWriter();
+        WriteTo(writer);
+        return writer.ToString();
+    }
+
+    private static void PrettyPrint(TextWriter textWriter, SyntaxNode node, string indent = "", bool isLast = true)
+    {
+        var marker = isLast ? "└──" : "├──";
+
+        textWriter.Write(indent);
+        textWriter.Write(marker);
+        textWriter.Write(node.Kind);
+
+        if (node is SyntaxToken t && t.Value != null)
+        {
+            textWriter.Write(" ");
+            textWriter.Write(t.Value);
+        }
+
+        textWriter.WriteLine();
+
+        indent += isLast ? " " : "│ ";
+
+        SyntaxNode lastChild = node.GetChildren().LastOrDefault();
+
+        foreach (var child in node.GetChildren())
+        {
+            PrettyPrint(textWriter, child, indent, child == lastChild);
+        }
+    }
 }
