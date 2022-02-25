@@ -1,4 +1,6 @@
-﻿namespace Sirius.CodeAnalysis;
+﻿using Sirius.CodeAnalysis.Text;
+
+namespace Sirius.CodeAnalysis;
 
 public sealed class Diagnostic
 {
