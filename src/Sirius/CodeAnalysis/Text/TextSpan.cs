@@ -1,4 +1,4 @@
-﻿namespace Sirius.CodeAnalysis;
+﻿namespace Sirius.CodeAnalysis.Text;
 
 public struct TextSpan
 {

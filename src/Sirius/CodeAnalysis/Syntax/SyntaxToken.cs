@@ -1,4 +1,6 @@
-﻿namespace Sirius.CodeAnalysis.Syntax;
+﻿using Sirius.CodeAnalysis.Text;
+
+namespace Sirius.CodeAnalysis.Syntax;
 
 public sealed class SyntaxToken : SyntaxNode
 {
