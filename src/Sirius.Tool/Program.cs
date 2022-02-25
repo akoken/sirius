@@ -49,17 +49,22 @@ internal static class Program
             }
             else
             {
+                var text = syntaxTree.Text;
                 foreach (var diagnostic in diagnostics)
                 {
+                    var lineIndex = text.GetLineIndex(diagnostic.Span.Start);
+                    var lineNumber = lineIndex + 1;
+                    var character = diagnostic.Span.Start - text.Lines[lineIndex].Start + 1;
                     Console.WriteLine();
 
                     Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.Write($"({lineNumber}, {character}):");
                     Console.WriteLine(diagnostic);
                     Console.ResetColor();
 
-                    var prefix = line.Substring(0, diagnostic.Span.Start);
-                    var error = line.Substring(diagnostic.Span.Start, diagnostic.Span.Length);
-                    var suffix = line.Substring(diagnostic.Span.End);
+                    var prefix = line.AsSpan(0, diagnostic.Span.Start).ToString();
+                    var error = line.AsSpan(diagnostic.Span.Start, diagnostic.Span.Length).ToString();
+                    var suffix = line.AsSpan(diagnostic.Span.End).ToString();
 
                     Console.Write("    ");
                     Console.Write(prefix);

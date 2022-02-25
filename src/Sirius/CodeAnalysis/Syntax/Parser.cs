@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using Sirius.CodeAnalysis.Text;
+using System.Collections.Immutable;
 
 namespace Sirius.CodeAnalysis.Syntax;
 
@@ -6,10 +7,11 @@ internal sealed class Parser
 {
     private readonly DiagnosticBag _diagnostics = new();
     private readonly ImmutableArray<SyntaxToken> _tokens;
+    private readonly SourceText _text;
 
     private int _position;
 
-    public Parser(string text)
+    public Parser(SourceText text)
     {
         var tokens = new List<SyntaxToken>();
 
@@ -26,6 +28,7 @@ internal sealed class Parser
             }
         } while (token.Kind != SyntaxKind.EndOfFileToken);
 
+        _text = text;
         _tokens = tokens.ToImmutableArray();
         _diagnostics.AddRange(lexer.Diagnostics);
     }
@@ -63,7 +66,7 @@ internal sealed class Parser
     {
         var expresion = ParseExpression();
         var endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-        return new SyntaxTree(expresion, endOfFileToken, _diagnostics.ToImmutableArray());
+        return new SyntaxTree(_text, expresion, endOfFileToken, _diagnostics.ToImmutableArray());
     }
 
     private ExpressionSyntax ParseExpression()
