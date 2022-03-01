@@ -1,5 +1,7 @@
 ﻿using Sirius.CodeAnalysis;
 using Sirius.CodeAnalysis.Syntax;
+using Sirius.CodeAnalysis.Text;
+using System.Text;
 
 namespace Sirius.Tool;
 
@@ -9,30 +11,48 @@ internal static class Program
     {
         bool showTree = false;
         var variables = new Dictionary<VariableSymbol, object>();
+        var textBuilder = new StringBuilder();
+
         while (true)
         {
-            Console.Write(">");
+            if (textBuilder.Length == 0)
+                Console.Write(">");
+            else
+                Console.Write("| ");
 
-            string line = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(line))
+            string input = Console.ReadLine();
+            bool isBlank = string.IsNullOrWhiteSpace(input);
+
+            if (textBuilder.Length == 0)
             {
-                return;
+                if (isBlank)
+                {
+                    break;
+                }
+                else if (input == "#showTree")
+                {
+                    showTree = !showTree;
+                    Console.WriteLine(showTree ? "Showing parse trees..." : "Not showing parse trees...");
+                    continue;
+                }
+                else if (input == "#cls")
+                {
+                    Console.Clear();
+                    continue;
+                }
             }
 
-            if (line == "#showTree")
+            textBuilder.AppendLine(input);
+            string text = textBuilder.ToString();
+
+            SyntaxTree syntaxTree = SyntaxTree.Parse(text);
+
+            if (!isBlank && syntaxTree.Diagnostics.Length > 0)
             {
-                showTree = !showTree;
-                Console.WriteLine(showTree ? "Showing parse trees..." : "Not showing parse trees...");
                 continue;
             }
-            else if (line == "#cls")
-            {
-                Console.Clear();
-                continue;
-            }
 
-            SyntaxTree syntaxTree = SyntaxTree.Parse(line);
-            var compilation = new Compilation(syntaxTree);
+            Compilation compilation = new(syntaxTree);
             EvaluationResult result = compilation.Evaluate(variables);
             IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
 
@@ -49,12 +69,12 @@ internal static class Program
             }
             else
             {
-                var text = syntaxTree.Text;
                 foreach (var diagnostic in diagnostics)
                 {
-                    var lineIndex = text.GetLineIndex(diagnostic.Span.Start);
+                    var lineIndex = syntaxTree.Text.GetLineIndex(diagnostic.Span.Start);
+                    var line = syntaxTree.Text.Lines[lineIndex];
                     var lineNumber = lineIndex + 1;
-                    var character = diagnostic.Span.Start - text.Lines[lineIndex].Start + 1;
+                    int character = diagnostic.Span.Start - line.Start + 1;
                     Console.WriteLine();
 
                     Console.ForegroundColor = ConsoleColor.DarkRed;
@@ -62,9 +82,12 @@ internal static class Program
                     Console.WriteLine(diagnostic);
                     Console.ResetColor();
 
-                    var prefix = line.AsSpan(0, diagnostic.Span.Start).ToString();
-                    var error = line.AsSpan(diagnostic.Span.Start, diagnostic.Span.Length).ToString();
-                    var suffix = line.AsSpan(diagnostic.Span.End).ToString();
+                    var prefixSpan = TextSpan.FromBounds(line.Start, diagnostic.Span.Start);
+                    var suffixSpan = TextSpan.FromBounds(diagnostic.Span.End, line.End);
+
+                    var prefix = syntaxTree.Text.ToString(prefixSpan);
+                    var error = syntaxTree.Text.ToString(diagnostic.Span);
+                    var suffix = syntaxTree.Text.ToString(suffixSpan);
 
                     Console.Write("    ");
                     Console.Write(prefix);
@@ -79,6 +102,8 @@ internal static class Program
 
                 Console.WriteLine();
             }
+
+            textBuilder.Clear();
         }
     }
 }
