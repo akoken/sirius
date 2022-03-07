@@ -49,10 +49,19 @@ public abstract class SyntaxNode
 
     private static void PrettyPrint(TextWriter textWriter, SyntaxNode node, string indent = "", bool isLast = true)
     {
+        bool isToConsole = textWriter == Console.Out;
         var marker = isLast ? "└──" : "├──";
 
         textWriter.Write(indent);
+
+        if (isToConsole)
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+
         textWriter.Write(marker);
+
+        if (isToConsole)
+            Console.ForegroundColor = node is SyntaxToken ? ConsoleColor.Blue : ConsoleColor.Cyan;
+
         textWriter.Write(node.Kind);
 
         if (node is SyntaxToken t && t.Value != null)
@@ -60,6 +69,9 @@ public abstract class SyntaxNode
             textWriter.Write(" ");
             textWriter.Write(t.Value);
         }
+
+        if (isToConsole)
+            Console.ResetColor();
 
         textWriter.WriteLine();
 
