@@ -62,11 +62,11 @@ internal sealed class Parser
         return new SyntaxToken(kind, Current.Position, null, null);
     }
 
-    public SyntaxTree Parse()
+    public CompilationUnitSyntax ParseCompilationUnit()
     {
         var expresion = ParseExpression();
         var endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-        return new SyntaxTree(_text, expresion, endOfFileToken, _diagnostics.ToImmutableArray());
+        return new CompilationUnitSyntax(expresion, endOfFileToken);
     }
 
     private ExpressionSyntax ParseExpression()

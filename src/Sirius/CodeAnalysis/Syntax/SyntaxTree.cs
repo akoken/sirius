@@ -6,17 +6,19 @@ namespace Sirius.CodeAnalysis.Syntax;
 public sealed class SyntaxTree
 {
     public SourceText Text { get; }
-    public ExpressionSyntax Root { get; }
 
-    public SyntaxToken EndOfFileToken { get; }
+    public CompilationUnitSyntax Root { get; }
 
     public ImmutableArray<Diagnostic> Diagnostics { get; }
 
-    public SyntaxTree(SourceText text, ExpressionSyntax root, SyntaxToken endOfFileToken, ImmutableArray<Diagnostic> diagnostics)
+    private SyntaxTree(SourceText text)
     {
+        Parser parser = new(text);
+        var root = parser.ParseCompilationUnit();
+        var diagnostics = parser.Diagnostics.ToImmutableArray();
+
         Text = text;
         Root = root;
-        EndOfFileToken = endOfFileToken;
         Diagnostics = diagnostics;
     }
 
@@ -28,8 +30,7 @@ public sealed class SyntaxTree
 
     public static SyntaxTree Parse(SourceText text)
     {
-        Parser parser = new(text);
-        return parser.Parse();
+        return new SyntaxTree(text);
     }
 
     public static IEnumerable<SyntaxToken> ParseTokens(string text)
