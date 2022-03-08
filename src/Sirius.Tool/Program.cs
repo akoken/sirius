@@ -12,6 +12,7 @@ internal static class Program
         bool showTree = false;
         var variables = new Dictionary<VariableSymbol, object>();
         var textBuilder = new StringBuilder();
+        Compilation previous = null;
 
         while (true)
         {
@@ -44,6 +45,11 @@ internal static class Program
                     Console.Clear();
                     continue;
                 }
+                else if (input == "#reset")
+                {
+                    previous = null;
+                    continue;
+                }
             }
 
             textBuilder.AppendLine(input);
@@ -56,7 +62,10 @@ internal static class Program
                 continue;
             }
 
-            Compilation compilation = new(syntaxTree);
+            Compilation compilation = previous is null
+                ? new Compilation(syntaxTree)
+                : previous.ContinueWith(syntaxTree);
+
             EvaluationResult result = compilation.Evaluate(variables);
             IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
 
@@ -72,6 +81,8 @@ internal static class Program
                 Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine(result.Value);
                 Console.ResetColor();
+
+                previous = compilation;
             }
             else
             {

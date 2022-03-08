@@ -1,15 +1,60 @@
 ﻿using Sirius.CodeAnalysis.Syntax;
+using System.Collections.Immutable;
 
 namespace Sirius.CodeAnalysis.Binding;
 
 internal sealed class Binder
 {
-    private readonly Dictionary<VariableSymbol, object> _variables;
     private readonly DiagnosticBag _diagnostics = new();
 
-    public Binder(Dictionary<VariableSymbol, object> variables)
+    private BoundScope _boundScope;
+
+    public Binder(BoundScope parent)
     {
-        _variables = variables;
+        _boundScope = new BoundScope(parent);
+    }
+
+    public static BoundGlobalScope BindGlobalScope(BoundGlobalScope previous, CompilationUnitSyntax syntax)
+    {
+        var parentScope = CreateParentScopes(previous);
+        var binder = new Binder(parentScope);
+        var expression = binder.BindExpression(syntax.Expression);
+        var variables = binder._boundScope.GetDeclaredVariables();
+        var diagnostics = binder.Diagnostics.ToImmutableArray();
+
+        if (previous is not null)
+        {
+            diagnostics = diagnostics.InsertRange(0, previous.Diagnostics);
+        }
+
+        return new BoundGlobalScope(previous, diagnostics, variables, expression);
+    }
+
+    private static BoundScope CreateParentScopes(BoundGlobalScope previous)
+    {
+        var stack = new Stack<BoundGlobalScope>();
+
+        while (previous is not null)
+        {
+            stack.Push(previous);
+            previous = previous.Previous;
+        }
+
+        BoundScope parent = null;
+        while (stack.Count > 0)
+        {
+            previous = stack.Pop();
+            var scope = new BoundScope(parent);
+
+            foreach (var v in previous.Variables)
+            {
+                scope.TryDeclare(v);
+            }
+
+            parent = scope;
+        }
+
+        return parent;
     }
 
     public DiagnosticBag Diagnostics => _diagnostics;
@@ -78,9 +123,8 @@ internal sealed class Binder
     private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
     {
         var name = syntax.IdentifierToken.Text;
-        var variable = _variables.Keys.FirstOrDefault(v => v.Name == name);
 
-        if (variable is null)
+        if (!_boundScope.TryLookUp(name, out var variable))
         {
             _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
             return new BoundLiteralExpression(0);
@@ -94,12 +138,17 @@ internal sealed class Binder
         var name = syntax.IdentifierToken.Text;
         var boundExpression = BindExpression(syntax.Expression);
 
-        var existingVariable = _variables.Keys.FirstOrDefault(v => v.Name == name);
-        if (existingVariable is not null)
-            _variables.Remove(existingVariable);
+        if (!_boundScope.TryLookUp(name, out var variable))
+        {
+            variable = new VariableSymbol(name, boundExpression.Type);
+            _boundScope.TryDeclare(variable);
+        }
 
-        var variable = new VariableSymbol(name, boundExpression.Type);
-        _variables[variable] = null;
+        if (boundExpression.Type != variable.Type)
+        {
+            _diagnostics.ReportCannotConvert(syntax.Expression.Span, boundExpression.Type, variable.Type);
+            return boundExpression;
+        }
 
         return new BoundAssignmentExpression(variable, boundExpression);
     }
