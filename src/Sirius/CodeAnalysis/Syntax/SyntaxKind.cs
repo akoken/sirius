@@ -19,11 +19,23 @@ public enum SyntaxKind
     BangEqualsToken,
     OpenParenthesisToken,
     CloseParenthesisToken,
+    OpenBraceToken,
+    CloseBraceToken,
     IdentifierToken,
 
-    // Keywords
-    TrueKeyword,
+    // Keywords    
     FalseKeyword,
+    LetKeyword,
+    TrueKeyword,
+    VarKeyword,
+
+    // Nodes
+    CompilationUnit,
+
+    // Statements
+    BlockStatement,
+    ExpressionStatement,
+    VariableDeclaration,
 
     // Expressions
     LiteralExpression,

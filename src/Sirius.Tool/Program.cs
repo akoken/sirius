@@ -12,13 +12,18 @@ internal static class Program
         bool showTree = false;
         var variables = new Dictionary<VariableSymbol, object>();
         var textBuilder = new StringBuilder();
+        Compilation previous = null;
 
         while (true)
         {
+            Console.ForegroundColor = ConsoleColor.Green;
+
             if (textBuilder.Length == 0)
-                Console.Write(">");
+                Console.Write("» ");
             else
-                Console.Write("| ");
+                Console.Write("· ");
+
+            Console.ResetColor();
 
             string input = Console.ReadLine();
             bool isBlank = string.IsNullOrWhiteSpace(input);
@@ -40,6 +45,11 @@ internal static class Program
                     Console.Clear();
                     continue;
                 }
+                else if (input == "#reset")
+                {
+                    previous = null;
+                    continue;
+                }
             }
 
             textBuilder.AppendLine(input);
@@ -52,7 +62,10 @@ internal static class Program
                 continue;
             }
 
-            Compilation compilation = new(syntaxTree);
+            Compilation compilation = previous is null
+                ? new Compilation(syntaxTree)
+                : previous.ContinueWith(syntaxTree);
+
             EvaluationResult result = compilation.Evaluate(variables);
             IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
 
@@ -65,7 +78,11 @@ internal static class Program
 
             if (!diagnostics.Any())
             {
+                Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine(result.Value);
+                Console.ResetColor();
+
+                previous = compilation;
             }
             else
             {
