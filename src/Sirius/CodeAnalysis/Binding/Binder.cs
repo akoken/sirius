@@ -65,6 +65,8 @@ internal sealed class Binder
         {
             case SyntaxKind.BlockStatement:
                 return BindBlockStatement((BlockStatementSyntax)syntax);
+            case SyntaxKind.VariableDeclaration:
+                return BindVariableDeclaration((VariableDeclarationSyntax)syntax);
             case SyntaxKind.ExpressionStatement:
                 return BindExpressionStatement((ExpressionStatementSyntax)syntax);
             default:
@@ -75,6 +77,7 @@ internal sealed class Binder
     private BoundStatement BindBlockStatement(BlockStatementSyntax syntax)
     {
         var statements = ImmutableArray.CreateBuilder<BoundStatement>();
+        _boundScope = new BoundScope(_boundScope);
 
         foreach (var statementSyntax in syntax.Statements)
         {
@@ -82,7 +85,24 @@ internal sealed class Binder
             statements.Add(statement);
         }
 
+        _boundScope = _boundScope.Parent;
+
         return new BoundBlockStatement(statements.ToImmutable());
+    }
+
+    private BoundStatement BindVariableDeclaration(VariableDeclarationSyntax syntax)
+    {
+        var name = syntax.Identifier.Text;
+        var isReadOnly = syntax.Keyword.Kind == SyntaxKind.LetKeyword;
+        var initializer = BindExpression(syntax.Initializer);
+        var variable = new VariableSymbol(name, isReadOnly, initializer.Type);
+
+        if (!_boundScope.TryDeclare(variable))
+        {
+            _diagnostics.ReportVariableAlreadyDeclared(syntax.Identifier.Span, name);
+        }
+
+        return new BoundVariableDeclaration(variable, initializer);
     }
 
     private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
@@ -173,8 +193,13 @@ internal sealed class Binder
 
         if (!_boundScope.TryLookUp(name, out var variable))
         {
-            variable = new VariableSymbol(name, boundExpression.Type);
-            _boundScope.TryDeclare(variable);
+            _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
+            return boundExpression;
+        }
+
+        if (variable.IsReadOnly)
+        {
+            _diagnostics.ReportCanNotAssign(syntax.EqualsToken.Span, name);
         }
 
         if (boundExpression.Type != variable.Type)

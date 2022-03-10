@@ -23,9 +23,11 @@ public enum SyntaxKind
     CloseBraceToken,
     IdentifierToken,
 
-    // Keywords
-    TrueKeyword,
+    // Keywords    
     FalseKeyword,
+    LetKeyword,
+    TrueKeyword,
+    VarKeyword,
 
     // Nodes
     CompilationUnit,
@@ -33,6 +35,7 @@ public enum SyntaxKind
     // Statements
     BlockStatement,
     ExpressionStatement,
+    VariableDeclaration,
 
     // Expressions
     LiteralExpression,
