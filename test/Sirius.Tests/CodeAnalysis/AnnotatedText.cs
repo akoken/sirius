@@ -59,12 +59,12 @@ internal sealed class AnnotatedText
 
     private static string Unindent(string text)
     {
-        List<string> lines = UnindentLines(text);
+        string[] lines = UnindentLines(text);
 
         return String.Join(Environment.NewLine, lines);
     }
 
-    public static List<string> UnindentLines(string text)
+    public static string[] UnindentLines(string text)
     {
         var lines = new List<string>();
         using (var reader = new StringReader(text))
@@ -102,6 +102,7 @@ internal sealed class AnnotatedText
 
         while (lines.Count > 0 && lines[lines.Count - 1].Length == 0)
             lines.RemoveAt(lines.Count - 1);
-        return lines;
+
+        return lines.ToArray();
     }
 }
