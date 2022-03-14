@@ -18,6 +18,7 @@ public class Compilation
     }
 
     public Compilation Previous { get; }
+
     public SyntaxTree SyntaxTree { get; }
 
     internal BoundGlobalScope GlobalScope
