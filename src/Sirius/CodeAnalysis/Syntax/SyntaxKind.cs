@@ -29,17 +29,21 @@ public enum SyntaxKind
 
     // Keywords    
     FalseKeyword,
+    IfKeyword,
+    ElseKeyword,
     LetKeyword,
     TrueKeyword,
     VarKeyword,
 
     // Nodes
     CompilationUnit,
+    ElseClause,
 
     // Statements
     BlockStatement,
-    ExpressionStatement,
     VariableDeclaration,
+    IfStatement,
+    ExpressionStatement,
 
     // Expressions
     LiteralExpression,

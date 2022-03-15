@@ -43,7 +43,11 @@ public class EvaluatorTests
     [InlineData("!true", false)]
     [InlineData("!false", true)]
     [InlineData("{ var a = 0 (a = 10) * a }", 100)]
-    public void SyntaxFact_GetText_RoundTrips(string text, object expectedValue)
+    [InlineData("{ var a = 0 if a == 0 a = 10 a }", 10)]
+    [InlineData("{ var a = 0 if a == 5 a = 10 a }", 0)]
+    [InlineData("{ var a = 0 if a == 0 a = 10 else a = 5 a }", 10)]
+    [InlineData("{ var a = 0 if a == 5 a = 10 else a = 6 a }", 6)]
+    public void Evaluator_Computes_CorrectValues(string text, object expectedValue)
     {
         AssertValue(text, expectedValue);
     }
