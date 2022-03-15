@@ -101,7 +101,7 @@ public static class SyntaxFacts
             case SyntaxKind.EqualsToken:
                 return "=";
             case SyntaxKind.LessToken:
-                return ">";
+                return "<";
             case SyntaxKind.LessOrEqualsToken:
                 return "<=";
             case SyntaxKind.GreaterToken:

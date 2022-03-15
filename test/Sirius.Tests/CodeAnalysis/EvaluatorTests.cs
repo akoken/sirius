@@ -21,6 +21,19 @@ public class EvaluatorTests
     [InlineData("5 == 5", true)]
     [InlineData("18 != 4", true)]
     [InlineData("5 != 5", false)]
+
+    [InlineData("5 < 8", true)]
+    [InlineData("9 < 6", false)]
+    [InlineData("5 <= 8", true)]
+    [InlineData("5 <= 5", true)]
+    [InlineData("9 <= 6", false)]
+
+    [InlineData("5 > 3", true)]
+    [InlineData("9 > 12", false)]
+    [InlineData("35 >= 8", true)]
+    [InlineData("5 >= 5", true)]
+    [InlineData("1 >= 6", false)]
+
     [InlineData("false == false", true)]
     [InlineData("true == false", false)]
     [InlineData("false != false", false)]
