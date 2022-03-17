@@ -6,6 +6,7 @@ internal enum BoundNodeKind
     BlockStatement,
     VariableDeclaration,
     IfStatement,
+    WhileStatement,
     ExpressionStatement,
 
     // Expressions

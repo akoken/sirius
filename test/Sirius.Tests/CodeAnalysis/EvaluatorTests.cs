@@ -21,19 +21,16 @@ public class EvaluatorTests
     [InlineData("5 == 5", true)]
     [InlineData("18 != 4", true)]
     [InlineData("5 != 5", false)]
-
     [InlineData("5 < 8", true)]
     [InlineData("9 < 6", false)]
     [InlineData("5 <= 8", true)]
     [InlineData("5 <= 5", true)]
     [InlineData("9 <= 6", false)]
-
     [InlineData("5 > 3", true)]
     [InlineData("9 > 12", false)]
     [InlineData("35 >= 8", true)]
     [InlineData("5 >= 5", true)]
     [InlineData("1 >= 6", false)]
-
     [InlineData("false == false", true)]
     [InlineData("true == false", false)]
     [InlineData("false != false", false)]
@@ -47,6 +44,7 @@ public class EvaluatorTests
     [InlineData("{ var a = 0 if a == 5 a = 10 a }", 0)]
     [InlineData("{ var a = 0 if a == 0 a = 10 else a = 5 a }", 10)]
     [InlineData("{ var a = 0 if a == 5 a = 10 else a = 6 a }", 6)]
+    [InlineData("{ var i = 10 var result = 0 while i > 0 { result = result + i i = i - 1} result }", 55)]
     public void Evaluator_Computes_CorrectValues(string text, object expectedValue)
     {
         AssertValue(text, expectedValue);
