@@ -73,6 +73,21 @@ public class EvaluatorTests
     }
 
     [Fact]
+    public void Evaluator_BlockStatement_NoInfiniteLoop()
+    {
+        var text = @"
+                {
+                [)][]
+            ";
+
+        var diagnostics = @"
+                Unexpected token ')'.
+            ";
+
+        AssertDiagnostics(text, diagnostics);
+    }
+
+    [Fact]
     public void Evaluator_IfStatement_Reports_CannotConvert()
     {
         var text = @"
@@ -151,6 +166,18 @@ public class EvaluatorTests
 
         var diagnostics = @"
                 Variable 'x' does not exist.
+            ";
+
+        AssertDiagnostics(text, diagnostics);
+    }
+
+    [Fact]
+    public void Evaluator_NameExpression_Reports_NoErrorForInsertedToken()
+    {
+        var text = @"[]";
+
+        var diagnostics = @"
+                Unexpected token <EndOfFileToken>, expected <IdentifierToken>.
             ";
 
         AssertDiagnostics(text, diagnostics);

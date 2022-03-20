@@ -90,8 +90,21 @@ internal sealed class Parser
 
         while (Current.Kind != SyntaxKind.EndOfFileToken && Current.Kind != SyntaxKind.CloseBraceToken)
         {
+            var startToken = Current;
+
             var statement = ParseStatement();
             statements.Add(statement);
+
+            // If ParseStatement() did not consume any token,
+            // we need to skip the current token and continue
+            // in order to avoid infinite loop.
+
+            // We don't need to report an error, because we'll already
+            // tried to parse an expression statement and reported one.
+            if (Current == startToken)
+            {
+                NextToken();
+            }
         }
 
         var closeBraceToken = MatchToken(SyntaxKind.CloseBraceToken);
