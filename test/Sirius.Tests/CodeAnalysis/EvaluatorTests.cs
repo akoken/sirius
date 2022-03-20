@@ -81,7 +81,8 @@ public class EvaluatorTests
             ";
 
         var diagnostics = @"
-                Unexpected token ')'.
+                Unexpected token <CloseParenthesisToken>, expected <IdentifierToken>.
+                Unexpected token <EndOfFileToken>, expected <CloseBraceToken>.
             ";
 
         AssertDiagnostics(text, diagnostics);
