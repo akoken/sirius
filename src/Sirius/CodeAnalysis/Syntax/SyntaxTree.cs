@@ -15,11 +15,10 @@ public sealed class SyntaxTree
     {
         Parser parser = new(text);
         var root = parser.ParseCompilationUnit();
-        var diagnostics = parser.Diagnostics.ToImmutableArray();
 
         Text = text;
         Root = root;
-        Diagnostics = diagnostics;
+        Diagnostics = parser.Diagnostics.ToImmutableArray();
     }
 
     public static SyntaxTree Parse(string text)
