@@ -9,6 +9,7 @@ public static class SyntaxFacts
             case SyntaxKind.PlusToken:
             case SyntaxKind.MinusToken:
             case SyntaxKind.BangToken:
+            case SyntaxKind.TildeToken:
                 return 6;
 
             default:
@@ -36,10 +37,13 @@ public static class SyntaxFacts
             case SyntaxKind.GreaterOrEqualsToken:
                 return 3;
 
+            case SyntaxKind.AmpersandToken:
             case SyntaxKind.AmpersandAmpersandToken:
                 return 2;
 
             case SyntaxKind.PipePipeToken:
+            case SyntaxKind.PipeToken:
+            case SyntaxKind.HatToken:
                 return 1;
 
             default:

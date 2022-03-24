@@ -150,6 +150,11 @@ internal sealed class Evaluator
             BoundBinaryOperatorKind.Substraction => (int)left - (int)right,
             BoundBinaryOperatorKind.Multiplication => (int)left * (int)right,
             BoundBinaryOperatorKind.Division => (int)left / (int)right,
+
+            BoundBinaryOperatorKind.BitwiseAnd => (int)left / (int)right,
+            BoundBinaryOperatorKind.BitwiseOr => (int)left / (int)right,
+            BoundBinaryOperatorKind.BitwiseXor => (int)left / (int)right,
+
             BoundBinaryOperatorKind.LogicalAnd => (bool)left && (bool)right,
             BoundBinaryOperatorKind.LogicalOr => (bool)left || (bool)right,
             BoundBinaryOperatorKind.Equals => Equals(left, right),
