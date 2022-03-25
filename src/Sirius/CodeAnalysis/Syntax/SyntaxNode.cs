@@ -28,7 +28,7 @@ public abstract class SyntaxNode
                 if (child is not null)
                     yield return child;
             }
-            else if (typeof(SyntaxNode).IsAssignableFrom(property.PropertyType))
+            else if (typeof(IEnumerable<SyntaxNode>).IsAssignableFrom(property.PropertyType))
             {
                 IEnumerable<SyntaxNode> children = (IEnumerable<SyntaxNode>)property.GetValue(this);
                 foreach (var child in children)
