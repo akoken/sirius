@@ -1,4 +1,5 @@
 ﻿using Sirius.CodeAnalysis.Binding;
+using Sirius.CodeAnalysis.Lowering;
 using Sirius.CodeAnalysis.Syntax;
 using System.Collections.Immutable;
 
@@ -46,7 +47,8 @@ public class Compilation
         if (diagnostics.Length > 0)
             return new EvaluationResult(diagnostics, null);
 
-        var evaluator = new Evaluator(GlobalScope.Statement, variables);
+        var statement = GetStatement();
+        var evaluator = new Evaluator(statement, variables);
         var value = evaluator.Evaluate();
 
         return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
@@ -54,6 +56,13 @@ public class Compilation
 
     public void EmitTree(TextWriter writer)
     {
-        GlobalScope.Statement.WriteTo(writer);
+        var statement = GetStatement();
+        statement.WriteTo(writer);
+    }
+
+    private BoundStatement GetStatement()
+    {
+        var statement = GlobalScope.Statement;
+        return Lowerer.Lower(statement);
     }
 }
