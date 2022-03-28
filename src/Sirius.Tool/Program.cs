@@ -73,16 +73,14 @@ internal static class Program
                 ? new Compilation(syntaxTree)
                 : previous.ContinueWith(syntaxTree);
 
-            EvaluationResult result = compilation.Evaluate(variables);
-            IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
-
             if (showTree)
                 syntaxTree.Root.WriteTo(Console.Out);
 
             if (showProgram)
                 compilation.EmitTree(Console.Out);
 
-            if (!diagnostics.Any())
+            EvaluationResult result = compilation.Evaluate(variables);
+            if (!result.Diagnostics.Any())
             {
                 Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine(result.Value);
@@ -92,7 +90,7 @@ internal static class Program
             }
             else
             {
-                foreach (var diagnostic in diagnostics)
+                foreach (var diagnostic in result.Diagnostics)
                 {
                     var lineIndex = syntaxTree.Text.GetLineIndex(diagnostic.Span.Start);
                     var line = syntaxTree.Text.Lines[lineIndex];
