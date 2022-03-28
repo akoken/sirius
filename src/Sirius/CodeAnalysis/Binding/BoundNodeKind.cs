@@ -8,6 +8,9 @@ internal enum BoundNodeKind
     IfStatement,
     WhileStatement,
     ForStatement,
+    GotoStatement,
+    LabelStatement,
+    ConditionalGotoStatement,
     ExpressionStatement,
 
     // Expressions

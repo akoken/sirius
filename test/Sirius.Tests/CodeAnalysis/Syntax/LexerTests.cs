@@ -127,6 +127,15 @@ public class LexerTests
         var t1IsKeyword = t1Kind.ToString().EndsWith("Keyword");
         var t2IsKeyword = t2Kind.ToString().EndsWith("Keyword");
 
+        if (t1IsKeyword && t2IsKeyword)
+            return true;
+
+        if (t1IsKeyword && t2Kind == SyntaxKind.IdentifierToken)
+            return true;
+
+        if (t2IsKeyword && t1Kind == SyntaxKind.IdentifierToken)
+            return true;
+
         if (t1Kind == SyntaxKind.IdentifierToken && t2Kind == SyntaxKind.IdentifierToken)
             return true;
 
@@ -157,13 +166,16 @@ public class LexerTests
         if (t1Kind == SyntaxKind.GreaterToken && t2Kind == SyntaxKind.EqualsEqualsToken)
             return true;
 
-        if (t1IsKeyword && t2IsKeyword)
+        if (t1Kind == SyntaxKind.AmpersandToken && t2Kind == SyntaxKind.AmpersandToken)
             return true;
 
-        if (t1IsKeyword && t2Kind == SyntaxKind.IdentifierToken)
+        if (t1Kind == SyntaxKind.AmpersandToken && t2Kind == SyntaxKind.AmpersandAmpersandToken)
             return true;
 
-        if (t2IsKeyword && t1Kind == SyntaxKind.IdentifierToken)
+        if (t1Kind == SyntaxKind.PipeToken && t2Kind == SyntaxKind.PipeToken)
+            return true;
+
+        if (t1Kind == SyntaxKind.PipeToken && t2Kind == SyntaxKind.PipePipeToken)
             return true;
 
         return false;
