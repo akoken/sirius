@@ -1,4 +1,5 @@
 ﻿using Sirius.CodeAnalysis.Binding;
+using Sirius.CodeAnalysis.Syntax;
 using System.Collections.Immutable;
 
 namespace Sirius.CodeAnalysis.Lowering
@@ -30,9 +31,10 @@ namespace Sirius.CodeAnalysis.Lowering
                 // <then>  
                 // end:
                 var endLabel = GenerateLabel();
-                var gotoFalse = new BoundConditionalGotoStatement(endLabel, node.Condition, true);
+                var gotoFalse = new BoundConditionalGotoStatement(endLabel, node.Condition, false);
                 var endLabelStatement = new BoundLabelStatement(endLabel);
                 var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(gotoFalse, node.ThenStatement, endLabelStatement));
+
                 return RewriteStatement(result);
             }
             else
@@ -54,7 +56,7 @@ namespace Sirius.CodeAnalysis.Lowering
                 var elseLabel = GenerateLabel();
                 var endLabel = GenerateLabel();
 
-                var gotoFalse = new BoundConditionalGotoStatement(elseLabel, node.Condition, true);
+                var gotoFalse = new BoundConditionalGotoStatement(elseLabel, node.Condition, false);
                 var gotoEndStatement = new BoundGotoStatement(endLabel);
                 var elseLabelStatement = new BoundLabelStatement(elseLabel);
                 var endLabelStatement = new BoundLabelStatement(endLabel);
@@ -66,6 +68,7 @@ namespace Sirius.CodeAnalysis.Lowering
                     node.ElseStatement,
                     endLabelStatement
                 ));
+
                 return RewriteStatement(result);
             }
         }
@@ -92,7 +95,7 @@ namespace Sirius.CodeAnalysis.Lowering
             var gotoCheck = new BoundGotoStatement(checkLabel);
             var continueLabelStatement = new BoundLabelStatement(continueLabel);
             var checkLabelStatement = new BoundLabelStatement(checkLabel);
-            var gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition, false);
+            var gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition);
             var endLabelStatement = new BoundLabelStatement(endLabel);
 
             var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
@@ -109,14 +112,49 @@ namespace Sirius.CodeAnalysis.Lowering
 
         protected override BoundStatement RewriteForStatement(BoundForStatement node)
         {
+            // for <var> = <lower> to <upper>
+            //      <body>
+            //
+            // ---->
+            //
+            // {
+            //      var <var> = <lower>
+            //      let upperBound = <upper>
+            //      while (<var> <= upperBound)
+            //      {
+            //          <body>
+            //          <var> = <var> + 1
+            //      }   
+            // }
+
             var variableDeclaration = new BoundVariableDeclaration(node.Variable, node.LowerBound);
-            BoundVariableExpression variableExpression = new(node.Variable);
-            var condition = new BoundBinaryExpression(variableExpression, BoundBinaryOperator.Bind(Syntax.SyntaxKind.LessOrEqualsToken, typeof(int), typeof(int)), node.UpperBound);
-            var increment = new BoundExpressionStatement(new BoundAssignmentExpression(node.Variable, new BoundBinaryExpression(variableExpression, BoundBinaryOperator.Bind(Syntax.SyntaxKind.PlusToken, typeof(int), typeof(int)), new BoundLiteralExpression(1))));
+            var variableExpression = new BoundVariableExpression(node.Variable);
+            var upperBoundSymbol = new VariableSymbol("upperBound", true, typeof(int));
+            var upperBoundDeclaration = new BoundVariableDeclaration(upperBoundSymbol, node.UpperBound);
+            var condition = new BoundBinaryExpression(
+                variableExpression,
+                BoundBinaryOperator.Bind(SyntaxKind.LessOrEqualsToken, typeof(int), typeof(int)),
+                new BoundVariableExpression(upperBoundSymbol)
+            );
+
+            var increment = new BoundExpressionStatement(
+                new BoundAssignmentExpression(
+                    node.Variable,
+                    new BoundBinaryExpression(
+                        variableExpression,
+                        BoundBinaryOperator.Bind(SyntaxKind.PlusToken, typeof(int), typeof(int)),
+                        new BoundLiteralExpression(1)
+                    )
+                )
+            );
 
             var whileBody = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(node.Body, increment));
             var whileStatement = new BoundWhileStatement(condition, whileBody);
-            var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(variableDeclaration, whileStatement));
+            var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
+                variableDeclaration,
+                upperBoundDeclaration,
+                whileStatement
+            ));
 
             return RewriteStatement(result);
         }
