@@ -330,6 +330,7 @@ internal abstract class Repl
         _submissionHistoryIndex--;
         if (_submissionHistoryIndex < 0)
             _submissionHistoryIndex = _submissionHistory.Count - 1;
+
         UpdateDocumentFromHistory(document, view);
     }
 
@@ -338,6 +339,7 @@ internal abstract class Repl
         _submissionHistoryIndex++;
         if (_submissionHistoryIndex > _submissionHistory.Count - 1)
             _submissionHistoryIndex = 0;
+
         UpdateDocumentFromHistory(document, view);
     }
 
@@ -348,7 +350,9 @@ internal abstract class Repl
         var historyItem = _submissionHistory[_submissionHistoryIndex];
         var lines = historyItem.Split(Environment.NewLine);
         foreach (var line in lines)
+        {
             document.Add(line);
+        }
 
         view.CurrentLine = document.Count - 1;
         view.CurrentCharacter = document[view.CurrentLine].Length;

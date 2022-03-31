@@ -6,9 +6,9 @@ namespace Sirius.Tool;
 
 internal sealed class SiriusRepl : Repl
 {
-    private Compilation _previous;
     private bool _showTree;
     private bool _showProgram;
+    private Compilation _previous;
     private readonly Dictionary<VariableSymbol, object> _variables = new Dictionary<VariableSymbol, object>();
 
     protected override void RenderLine(string line)
@@ -82,7 +82,7 @@ internal sealed class SiriusRepl : Repl
         if (_showProgram)
             compilation.EmitTree(Console.Out);
 
-        var result = compilation.Evaluate(_variables);
+        EvaluationResult result = compilation.Evaluate(_variables);
 
         if (!result.Diagnostics.Any())
         {
