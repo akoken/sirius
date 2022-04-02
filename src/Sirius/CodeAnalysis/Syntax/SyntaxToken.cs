@@ -14,6 +14,11 @@ public sealed class SyntaxToken : SyntaxNode
 
     public override TextSpan Span => new TextSpan(Position, Text?.Length ?? 0);
 
+    /// <summary>
+    /// A token is missing if it was inserted by the parser and doesn't appear in source.
+    /// </summary>
+    public bool IsMissing => Text == null;
+
     public SyntaxToken(SyntaxKind kind, int position, string text, object value)
     {
         Kind = kind;
