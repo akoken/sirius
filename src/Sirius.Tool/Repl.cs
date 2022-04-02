@@ -279,7 +279,6 @@ internal abstract class Repl
             view.CurrentLine--;
             document[view.CurrentLine] = previousLine + currentLine;
             view.CurrentCharacter = previousLine.Length;
-            return;
         }
         else
         {
@@ -345,6 +344,9 @@ internal abstract class Repl
 
     private void UpdateDocumentFromHistory(ObservableCollection<string> document, SubmissionView view)
     {
+        if (_submissionHistory.Count == 0)
+            return;
+
         document.Clear();
 
         var historyItem = _submissionHistory[_submissionHistoryIndex];
