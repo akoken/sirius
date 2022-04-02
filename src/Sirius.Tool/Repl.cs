@@ -279,7 +279,6 @@ internal abstract class Repl
             view.CurrentLine--;
             document[view.CurrentLine] = previousLine + currentLine;
             view.CurrentCharacter = previousLine.Length;
-            return;
         }
         else
         {
