@@ -5,7 +5,7 @@ namespace Sirius.Tool;
 
 internal abstract class Repl
 {
-    private List<string> _submissionHistory = new List<string>();
+    private List<string> _submissionHistory = new();
     private int _submissionHistoryIndex;
 
     private bool _done;

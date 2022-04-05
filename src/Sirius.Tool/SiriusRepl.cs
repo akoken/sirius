@@ -9,7 +9,7 @@ internal sealed class SiriusRepl : Repl
     private bool _showTree;
     private bool _showProgram;
     private Compilation _previous;
-    private readonly Dictionary<VariableSymbol, object> _variables = new Dictionary<VariableSymbol, object>();
+    private readonly Dictionary<VariableSymbol, object> _variables = new();
 
     protected override void RenderLine(string line)
     {
