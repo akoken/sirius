@@ -1,4 +1,5 @@
-﻿using Sirius.CodeAnalysis.Text;
+﻿using System.Text;
+using Sirius.CodeAnalysis.Text;
 
 namespace Sirius.CodeAnalysis.Syntax;
 
@@ -162,6 +163,9 @@ internal sealed class Lexer
                     _position++;
                 }
                 break;
+            case '"':
+                ReadString();
+                break;
             case '0':
             case '1':
             case '2':
@@ -203,6 +207,48 @@ internal sealed class Lexer
             text = _text.ToString(_start, length);
 
         return new SyntaxToken(_kind, _start, text, _value);
+    }
+
+    private void ReadString()
+    {
+        _position++;
+
+        var sb = new StringBuilder();
+        var done = false;
+
+        while (!done)
+        {
+            switch (Current)
+            {
+                case '\0':
+                case '\r':
+                case '\n':
+                    var span = new TextSpan(_start, 1);
+                    _diagnostics.ReportUnterminatedString(span);
+                    done = true;
+                    break;
+                case '"':
+                    if (Lookahead == '"')
+                    {
+                        sb.Append(Current);
+                        _position += 2;
+                    }
+                    else
+                    {
+                        _position++;
+                        done = true;
+                    }
+                    break;
+                default:
+                    sb.Append(Current);
+                    _position++;
+                    break;
+            }
+        }
+
+
+        _kind = SyntaxKind.StringToken;
+        _value = sb.ToString();
     }
 
     private void ReadWhiteSpace()

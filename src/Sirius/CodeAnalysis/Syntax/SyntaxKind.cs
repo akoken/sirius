@@ -7,6 +7,7 @@ public enum SyntaxKind
     EndOfFileToken,
     WhitespaceToken,
     NumberToken,
+    StringToken,
     PlusToken,
     MinusToken,
     StarToken,
@@ -31,7 +32,7 @@ public enum SyntaxKind
     CloseBraceToken,
     IdentifierToken,
 
-    // Keywords    
+    // Keywords
     FalseKeyword,
     ForKeyword,
     IfKeyword,

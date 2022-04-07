@@ -1,4 +1,5 @@
-using Sirius.CodeAnalysis.Syntax;
+﻿using Sirius.CodeAnalysis.Syntax;
+using Sirius.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,22 @@ namespace Sirius.Tests.CodeAnalysis.Syntax;
 public class LexerTests
 {
     [Fact]
-    public void Lexer_Tests_AllTokens()
+    public void Lexer_Lexes_UnterminatedString()
+    {
+        const string Text = "\"hello";
+        var tokens = SyntaxTree.ParseTokens(Text, out var diagnostics);
+
+        var token = Assert.Single(tokens);
+        Assert.Equal(SyntaxKind.StringToken, token.Kind);
+        Assert.Equal(Text, token.Text);
+
+        var diagnostic = Assert.Single(diagnostics);
+        Assert.Equal(new TextSpan(0, 1), diagnostic.Span);
+        Assert.Equal("Unterminated string literal.", diagnostic.Message);
+    }
+
+    [Fact]
+    public void Lexer_Covers_AllTokens()
     {
         var tokenKinds = Enum.GetValues(typeof(SyntaxKind))
             .Cast<SyntaxKind>()
@@ -105,6 +121,8 @@ public class LexerTests
             (SyntaxKind.IdentifierToken, "abcd"),
             (SyntaxKind.NumberToken, "1"),
             (SyntaxKind.NumberToken, "333"),
+            (SyntaxKind.StringToken, "\"Test\""),
+            (SyntaxKind.StringToken, "\"Te\"\"st\""),
         };
 
         return fixedTokens.Concat(dynamicTokens);
@@ -140,6 +158,9 @@ public class LexerTests
             return true;
 
         if (t1Kind == SyntaxKind.NumberToken && t2Kind == SyntaxKind.NumberToken)
+            return true;
+
+        if (t1Kind == SyntaxKind.StringToken && t2Kind == SyntaxKind.StringToken)
             return true;
 
         if (t1Kind == SyntaxKind.BangToken && t2Kind == SyntaxKind.EqualsToken)
