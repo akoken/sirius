@@ -1,4 +1,5 @@
-﻿using Sirius.CodeAnalysis.Syntax;
+﻿using Sirius.CodeAnalysis.Symbols;
+using Sirius.CodeAnalysis.Syntax;
 using System.Collections.Immutable;
 
 namespace Sirius.CodeAnalysis.Binding;

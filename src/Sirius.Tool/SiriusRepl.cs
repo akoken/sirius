@@ -1,4 +1,5 @@
 ﻿using Sirius.CodeAnalysis;
+using Sirius.CodeAnalysis.Symbols;
 using Sirius.CodeAnalysis.Syntax;
 using Sirius.CodeAnalysis.Text;
 

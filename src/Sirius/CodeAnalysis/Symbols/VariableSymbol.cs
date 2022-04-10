@@ -1,4 +1,4 @@
-﻿namespace Sirius.CodeAnalysis;
+﻿namespace Sirius.CodeAnalysis.Symbols;
 
 public sealed class VariableSymbol
 {

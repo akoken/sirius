@@ -1,4 +1,6 @@
-﻿namespace Sirius.CodeAnalysis.Binding;
+﻿using Sirius.CodeAnalysis.Symbols;
+
+namespace Sirius.CodeAnalysis.Binding;
 
 internal sealed class BoundForStatement : BoundStatement
 {

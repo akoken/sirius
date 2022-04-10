@@ -1,4 +1,5 @@
 ﻿using Sirius.CodeAnalysis.Binding;
+using Sirius.CodeAnalysis.Symbols;
 
 namespace Sirius.CodeAnalysis;
 
