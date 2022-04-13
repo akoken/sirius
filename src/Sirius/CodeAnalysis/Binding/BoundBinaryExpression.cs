@@ -1,4 +1,6 @@
-﻿namespace Sirius.CodeAnalysis.Binding
+﻿using Sirius.CodeAnalysis.Symbols;
+
+namespace Sirius.CodeAnalysis.Binding
 {
     internal sealed class BoundBinaryExpression : BoundExpression
     {
@@ -16,6 +18,6 @@
         }
 
         public override BoundNodeKind Kind => BoundNodeKind.BinaryExpression;
-        public override Type Type => Op.Type;
+        public override TypeSymbol Type => Op.Type;
     }
 }

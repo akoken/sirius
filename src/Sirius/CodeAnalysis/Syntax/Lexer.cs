@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Sirius.CodeAnalysis.Symbols;
 using Sirius.CodeAnalysis.Text;
 
 namespace Sirius.CodeAnalysis.Syntax;
@@ -267,7 +268,7 @@ internal sealed class Lexer
         var length = _position - _start;
         var text = _text.ToString(_start, length);
         if (!int.TryParse(text, out var value))
-            _diagnostics.ReportInvalidNumber(new TextSpan(_start, length), text, typeof(int));
+            _diagnostics.ReportInvalidNumber(new TextSpan(_start, length), text, TypeSymbol.Int);
 
         _value = value;
         _kind = SyntaxKind.NumberToken;
