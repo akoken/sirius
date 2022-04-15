@@ -233,13 +233,13 @@ internal sealed class Binder
         var name = syntax.IdentifierToken.Text;
         if (string.IsNullOrEmpty(name))
         {
-            return new BoundLiteralExpression(0);
+            return new BoundErrorExpression();
         }
 
         if (!_scope.TryLookUp(name, out var variable))
         {
             _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
-            return new BoundLiteralExpression(0);
+            return new BoundErrorExpression();
         }
 
         return new BoundVariableExpression(variable);
