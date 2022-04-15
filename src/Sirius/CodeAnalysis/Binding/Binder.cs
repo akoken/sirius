@@ -187,12 +187,16 @@ internal sealed class Binder
     private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
     {
         var boundOperand = BindExpression(syntax.Operand);
-        var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
+        if (boundOperand.Type == TypeSymbol.Error)
+        {
+            return new BoundErrorExpression();
+        }
 
+        var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
         if (boundOperator is null)
         {
             _diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
-            return boundOperand;
+            return new BoundErrorExpression();
         }
 
         return new BoundUnaryExpression(boundOperator, boundOperand);
@@ -202,12 +206,17 @@ internal sealed class Binder
     {
         var boundLeft = BindExpression(syntax.Left);
         var boundRight = BindExpression(syntax.Right);
-        var boundOperator = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
 
+        if (boundLeft.Type == TypeSymbol.Error || boundRight.Type == TypeSymbol.Error)
+        {
+            return new BoundErrorExpression();
+        }
+
+        var boundOperator = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
         if (boundOperator == null)
         {
             _diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
-            return boundLeft;
+            return new BoundErrorExpression();
         }
 
         return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
