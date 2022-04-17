@@ -1,4 +1,5 @@
 ﻿using Sirius.CodeAnalysis;
+using Sirius.CodeAnalysis.Symbols;
 using Sirius.CodeAnalysis.Syntax;
 using Sirius.CodeAnalysis.Text;
 
@@ -18,10 +19,15 @@ internal sealed class SiriusRepl : Repl
         {
             var isKeyword = token.Kind.ToString().EndsWith("Keyword");
             var isNumber = token.Kind == SyntaxKind.NumberToken;
+            var isIdentifier = token.Kind == SyntaxKind.IdentifierToken;
 
             if (isKeyword)
                 Console.ForegroundColor = ConsoleColor.Blue;
-            else if (!isNumber)
+            else if (isIdentifier)
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+            else if (isNumber)
+                Console.ForegroundColor = ConsoleColor.Cyan;
+            else
                 Console.ForegroundColor = ConsoleColor.DarkGray;
 
             Console.Write(token.Text);
@@ -60,21 +66,21 @@ internal sealed class SiriusRepl : Repl
         if (string.IsNullOrEmpty(text))
             return true;
 
+        var lastTwoLinesAreBlank = text.Split(Environment.NewLine)
+            .Reverse()
+            .TakeWhile(s => string.IsNullOrEmpty(s))
+            .Take(2)
+            .Count() == 2;
+
+        if (lastTwoLinesAreBlank)
+            return true;
+
         var syntaxTree = SyntaxTree.Parse(text);
 
-        if (GetLastToken(syntaxTree.Root.Statement).IsMissing)
+        if (syntaxTree.Root.Statement.GetLastToken().IsMissing)
             return false;
 
         return true;
-    }
-
-    private static SyntaxToken GetLastToken(SyntaxNode node)
-    {
-        if (node is SyntaxToken token)
-            return token;
-
-        // A syntax node should always contain at least 1 token.
-        return GetLastToken(node.GetChildren().Last());
     }
 
     protected override void EvaluateSubmission(string text)

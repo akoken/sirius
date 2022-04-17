@@ -1,4 +1,6 @@
-﻿namespace Sirius.CodeAnalysis.Binding;
+﻿using Sirius.CodeAnalysis.Symbols;
+
+namespace Sirius.CodeAnalysis.Binding;
 
 internal sealed class BoundUnaryExpression : BoundExpression
 {
@@ -13,5 +15,5 @@ internal sealed class BoundUnaryExpression : BoundExpression
     }
 
     public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
-    public override Type Type => Op.Type;
+    public override TypeSymbol Type => Op.Type;
 }

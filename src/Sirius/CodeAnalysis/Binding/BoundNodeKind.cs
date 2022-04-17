@@ -14,9 +14,10 @@ internal enum BoundNodeKind
     ExpressionStatement,
 
     // Expressions
+    ErrorExpression,
     UnaryExpression,
     LiteralExpression,
     BinaryExpression,
     VariableExpression,
-    AssignmentExpression,
+    AssignmentExpression
 }

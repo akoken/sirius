@@ -1,8 +1,8 @@
-﻿namespace Sirius.CodeAnalysis;
+﻿namespace Sirius.CodeAnalysis.Binding;
 
-internal sealed class LabelSymbol
+internal sealed class BoundLabel
 {
-    internal LabelSymbol(string name)
+    internal BoundLabel(string name)
     {
         Name = name;
     }

@@ -1,4 +1,6 @@
-﻿namespace Sirius.CodeAnalysis.Binding;
+﻿using Sirius.CodeAnalysis.Symbols;
+
+namespace Sirius.CodeAnalysis.Binding;
 
 internal sealed class BoundAssignmentExpression : BoundExpression
 {
@@ -8,7 +10,7 @@ internal sealed class BoundAssignmentExpression : BoundExpression
         Expression = expression;
     }
 
-    public override Type Type => Expression.Type;
+    public override TypeSymbol Type => Expression.Type;
 
     public override BoundNodeKind Kind => BoundNodeKind.AssignmentExpression;
 

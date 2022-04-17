@@ -1,4 +1,5 @@
 ﻿using Sirius.CodeAnalysis.Binding;
+using Sirius.CodeAnalysis.Symbols;
 
 namespace Sirius.CodeAnalysis;
 
@@ -17,7 +18,7 @@ internal sealed class Evaluator
 
     public object Evaluate()
     {
-        var labelToIndex = new Dictionary<LabelSymbol, int>();
+        var labelToIndex = new Dictionary<BoundLabel, int>();
 
         for (var i = 0; i < _root.Statements.Length; i++)
         {
@@ -133,17 +134,17 @@ internal sealed class Evaluator
             case BoundBinaryOperatorKind.Multiplication: return (int)left * (int)right;
             case BoundBinaryOperatorKind.Division: return (int)left / (int)right;
             case BoundBinaryOperatorKind.BitwiseAnd:
-                if (b.Type == typeof(int))
+                if (b.Type == TypeSymbol.Int)
                     return (int)left & (int)right;
                 else
                     return (bool)left & (bool)right;
             case BoundBinaryOperatorKind.BitwiseOr:
-                if (b.Type == typeof(int))
+                if (b.Type == TypeSymbol.Int)
                     return (int)left | (int)right;
                 else
                     return (bool)left | (bool)right;
             case BoundBinaryOperatorKind.BitwiseXor:
-                if (b.Type == typeof(int))
+                if (b.Type == TypeSymbol.Int)
                     return (int)left ^ (int)right;
                 else
                     return (bool)left ^ (bool)right;

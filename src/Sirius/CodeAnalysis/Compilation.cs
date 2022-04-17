@@ -1,5 +1,6 @@
 ﻿using Sirius.CodeAnalysis.Binding;
 using Sirius.CodeAnalysis.Lowering;
+using Sirius.CodeAnalysis.Symbols;
 using Sirius.CodeAnalysis.Syntax;
 using System.Collections.Immutable;
 

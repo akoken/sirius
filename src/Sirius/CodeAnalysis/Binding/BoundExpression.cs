@@ -1,6 +1,8 @@
-﻿namespace Sirius.CodeAnalysis.Binding;
+﻿using Sirius.CodeAnalysis.Symbols;
+
+namespace Sirius.CodeAnalysis.Binding;
 
 internal abstract class BoundExpression : BoundNode
 {
-    public abstract Type Type { get; }
+    public abstract TypeSymbol Type { get; }
 }
