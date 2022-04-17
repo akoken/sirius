@@ -222,7 +222,7 @@ internal sealed class Binder
     private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
     {
         var name = syntax.IdentifierToken.Text;
-        if (string.IsNullOrEmpty(name))
+        if (syntax.IdentifierToken.IsMissing)
         {
             return new BoundErrorExpression();
         }
