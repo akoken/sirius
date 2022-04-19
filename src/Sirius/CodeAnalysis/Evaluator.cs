@@ -129,7 +129,11 @@ internal sealed class Evaluator
 
         switch (b.Op.Kind)
         {
-            case BoundBinaryOperatorKind.Addition: return (int)left + (int)right;
+            case BoundBinaryOperatorKind.Addition:
+                if (b.Type == TypeSymbol.Int)
+                    return (int)left + (int)right;
+                else
+                    return (string)left + (string)right;
             case BoundBinaryOperatorKind.Substraction: return (int)left - (int)right;
             case BoundBinaryOperatorKind.Multiplication: return (int)left * (int)right;
             case BoundBinaryOperatorKind.Division: return (int)left / (int)right;
