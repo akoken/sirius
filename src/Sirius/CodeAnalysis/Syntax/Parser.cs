@@ -1,5 +1,5 @@
-﻿using Sirius.CodeAnalysis.Text;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
+using Sirius.CodeAnalysis.Text;
 
 namespace Sirius.CodeAnalysis.Syntax;
 
@@ -227,7 +227,7 @@ internal sealed class Parser
             SyntaxKind.FalseKeyword or SyntaxKind.TrueKeyword => ParseBooleanLiteral(),
             SyntaxKind.NumberToken => ParseNumberLiteral(),
             SyntaxKind.StringToken => ParseStringLiteral(),
-            _ => ParseNameExpression(),
+            _ => ParseNameOrCallExpression(),
         };
     }
 
@@ -246,12 +246,6 @@ internal sealed class Parser
         return new LiteralExpressionSyntax(keywordToken, isTrue);
     }
 
-    private ExpressionSyntax ParseNameExpression()
-    {
-        var identifierToken = MatchToken(SyntaxKind.IdentifierToken);
-        return new NameExpressionSyntax(identifierToken);
-    }
-
     private ExpressionSyntax ParseNumberLiteral()
     {
         var numberToken = MatchToken(SyntaxKind.NumberToken);
@@ -262,5 +256,50 @@ internal sealed class Parser
     {
         var stringToken = MatchToken(SyntaxKind.StringToken);
         return new LiteralExpressionSyntax(stringToken);
+    }
+
+    private ExpressionSyntax ParseNameOrCallExpression()
+    {
+        if (Peek(0).Kind == SyntaxKind.IdentifierToken && Peek(1).Kind == SyntaxKind.OpenParenthesisToken)
+        {
+            return ParseCallExpression();
+        }
+
+        return ParseNameExpression();
+    }
+
+    private ExpressionSyntax ParseCallExpression()
+    {
+        var identifierToken = MatchToken(SyntaxKind.IdentifierToken);
+        var openParenthesisToken = MatchToken(SyntaxKind.OpenParenthesisToken);
+        var arguments = ParseArguments();
+        var closeParenthesisToken = MatchToken(SyntaxKind.CloseParenthesisToken);
+
+        return new CallExpressionSyntax(identifierToken, openParenthesisToken, arguments, closeParenthesisToken);
+    }
+
+    private SeparatedSyntaxList<ExpressionSyntax> ParseArguments()
+    {
+        var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
+
+        while (Current.Kind != SyntaxKind.CloseParenthesisToken && Current.Kind != SyntaxKind.EndOfFileToken)
+        {
+            var expression = ParseExpression();
+            nodesAndSeparators.Add(expression);
+
+            if (Current.Kind != SyntaxKind.CloseParenthesisToken)
+            {
+                var separator = MatchToken(SyntaxKind.CommaToken);
+                nodesAndSeparators.Add(separator);
+            }
+        }
+
+        return new SeparatedSyntaxList<ExpressionSyntax>(nodesAndSeparators.ToImmutable());
+    }
+
+    private ExpressionSyntax ParseNameExpression()
+    {
+        var identifierToken = MatchToken(SyntaxKind.IdentifierToken);
+        return new NameExpressionSyntax(identifierToken);
     }
 }
