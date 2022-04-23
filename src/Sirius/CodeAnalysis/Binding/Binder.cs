@@ -41,7 +41,7 @@ internal sealed class Binder
             previous = previous.Previous;
         }
 
-        BoundScope parent = null;
+        BoundScope parent = CreateRootScope();
         while (stack.Count > 0)
         {
             previous = stack.Pop();
@@ -49,13 +49,25 @@ internal sealed class Binder
 
             foreach (var v in previous.Variables)
             {
-                scope.TryDeclare(v);
+                scope.TryDeclareVariable(v);
             }
 
             parent = scope;
         }
 
         return parent;
+    }
+
+    private static BoundScope CreateRootScope()
+    {
+        var scope = new BoundScope(null);
+
+        foreach (var function in BuiltinFunctions.GetAll())
+        {
+            scope.TryDeclareFunction(function);
+        }
+
+        return scope;
     }
 
     public DiagnosticBag Diagnostics => _diagnostics;
@@ -241,7 +253,7 @@ internal sealed class Binder
             return new BoundErrorExpression();
         }
 
-        if (!_scope.TryLookUp(name, out var variable))
+        if (!_scope.TryLookUpVariable(name, out var variable))
         {
             _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
             return new BoundErrorExpression();
@@ -255,7 +267,7 @@ internal sealed class Binder
         var name = syntax.IdentifierToken.Text;
         var boundExpression = BindExpression(syntax.Expression);
 
-        if (!_scope.TryLookUp(name, out var variable))
+        if (!_scope.TryLookUpVariable(name, out var variable))
         {
             _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
             return boundExpression;
@@ -284,10 +296,7 @@ internal sealed class Binder
             boundArguments.Add(boundArgument);
         }
 
-        var functions = BuiltinFunctions.GetAll();
-
-        var function = functions.SingleOrDefault(f => f.Name == syntax.Identifier.Text);
-        if (function is null)
+        if (!_scope.TryLookUpFunction(syntax.Identifier.Text, out var function))
         {
             _diagnostics.ReportUndefinedFunction(syntax.Identifier.Span, syntax.Identifier.Text);
             return new BoundErrorExpression();
@@ -320,7 +329,7 @@ internal sealed class Binder
         var declare = !identifier.IsMissing;
 
         var variable = new VariableSymbol(name, isReadOnly, type);
-        if (declare && !_scope.TryDeclare(variable))
+        if (declare && !_scope.TryDeclareVariable(variable))
         {
             _diagnostics.ReportVariableAlreadyDeclared(identifier.Span, name);
         }
