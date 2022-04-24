@@ -1,4 +1,5 @@
-﻿using Sirius.CodeAnalysis.Binding;
+﻿using System.Security.Cryptography;
+using Sirius.CodeAnalysis.Binding;
 using Sirius.CodeAnalysis.Symbols;
 
 namespace Sirius.CodeAnalysis;
@@ -176,7 +177,14 @@ internal sealed class Evaluator
         {
             var message = (string)EvaluateExpression(node.Arguments[0]);
             Console.WriteLine(message);
+
             return null;
+        }
+        else if (node.Function == BuiltinFunctions.Random)
+        {
+            var max = (int)EvaluateExpression(node.Arguments[0]);
+
+            return RandomNumberGenerator.GetInt32(max);
         }
         else
         {
