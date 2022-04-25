@@ -253,7 +253,7 @@ internal sealed class Binder
             return new BoundErrorExpression();
         }
 
-        if (!_scope.TryLookUpVariable(name, out var variable))
+        if (!_scope.TryLookupVariable(name, out var variable))
         {
             _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
             return new BoundErrorExpression();
@@ -267,7 +267,7 @@ internal sealed class Binder
         var name = syntax.IdentifierToken.Text;
         var boundExpression = BindExpression(syntax.Expression);
 
-        if (!_scope.TryLookUpVariable(name, out var variable))
+        if (!_scope.TryLookupVariable(name, out var variable))
         {
             _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
             return boundExpression;
@@ -299,7 +299,7 @@ internal sealed class Binder
             boundArguments.Add(boundArgument);
         }
 
-        if (!_scope.TryLookUpFunction(syntax.Identifier.Text, out var function))
+        if (!_scope.TryLookupFunction(syntax.Identifier.Text, out var function))
         {
             _diagnostics.ReportUndefinedFunction(syntax.Identifier.Span, syntax.Identifier.Text);
             return new BoundErrorExpression();
@@ -347,7 +347,7 @@ internal sealed class Binder
         var variable = new VariableSymbol(name, isReadOnly, type);
         if (declare && !_scope.TryDeclareVariable(variable))
         {
-            _diagnostics.ReportVariableAlreadyDeclared(identifier.Span, name);
+            _diagnostics.ReportSymbolAlreadyDeclared(identifier.Span, name);
         }
 
         return variable;
