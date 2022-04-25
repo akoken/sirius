@@ -305,16 +305,16 @@ internal sealed class Binder
             return new BoundErrorExpression();
         }
 
-        if (syntax.Arguments.Count != function.Parameter.Length)
+        if (syntax.Arguments.Count != function.Parameters.Length)
         {
-            _diagnostics.ReportWrongArgumentCount(syntax.Span, function.Name, function.Parameter.Length, syntax.Arguments.Count);
+            _diagnostics.ReportWrongArgumentCount(syntax.Span, function.Name, function.Parameters.Length, syntax.Arguments.Count);
             return new BoundErrorExpression();
         }
 
         for (var i = 0; i < syntax.Arguments.Count; i++)
         {
             var argument = boundArguments[i];
-            var parameter = function.Parameter[i];
+            var parameter = function.Parameters[i];
 
             if (argument.Type != parameter.Type)
             {
