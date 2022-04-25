@@ -28,6 +28,14 @@ public abstract class SyntaxNode
                 if (child is not null)
                     yield return child;
             }
+            else if (typeof(SeparatedSyntaxList).IsAssignableFrom(property.PropertyType))
+            {
+                var separatedSynatxList = (SeparatedSyntaxList)property.GetValue(this);
+                foreach (var child in separatedSynatxList.GetWithSeparators())
+                {
+                    yield return child;
+                }
+            }
             else if (typeof(IEnumerable<SyntaxNode>).IsAssignableFrom(property.PropertyType))
             {
                 IEnumerable<SyntaxNode> children = (IEnumerable<SyntaxNode>)property.GetValue(this);

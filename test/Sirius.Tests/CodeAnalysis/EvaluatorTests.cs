@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Sirius.CodeAnalysis;
+﻿using Sirius.CodeAnalysis;
 using Sirius.CodeAnalysis.Symbols;
 using Sirius.CodeAnalysis.Syntax;
 using Xunit;
@@ -94,7 +92,24 @@ public class EvaluatorTests
             ";
 
         var diagnostics = @"
-                Variable 'x' is already declared.
+                'x' is already declared.
+            ";
+
+        AssertDiagnostics(text, diagnostics);
+    }
+
+    [Fact]
+    public void Evaluator_Variables_Can_Shadow_Functions()
+    {
+        var text = @"
+                {
+                    let print = 42
+                    [print](""test"")
+                }
+            ";
+
+        var diagnostics = @"
+                Function 'print' does not exist.
             ";
 
         AssertDiagnostics(text, diagnostics);

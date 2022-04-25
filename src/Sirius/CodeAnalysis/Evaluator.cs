@@ -1,4 +1,5 @@
-﻿using Sirius.CodeAnalysis.Binding;
+﻿using System.Security.Cryptography;
+using Sirius.CodeAnalysis.Binding;
 using Sirius.CodeAnalysis.Symbols;
 
 namespace Sirius.CodeAnalysis;
@@ -87,6 +88,8 @@ internal sealed class Evaluator
             BoundNodeKind.AssignmentExpression => EvaluateAssignmentExpression((BoundAssignmentExpression)node),
             BoundNodeKind.UnaryExpression => EvaluateUnaryExpression((BoundUnaryExpression)node),
             BoundNodeKind.BinaryExpression => EvaluateBinaryExpression((BoundBinaryExpression)node),
+            BoundNodeKind.CallExpression => EvaluateCallExpression((BoundCallExpression)node),
+            BoundNodeKind.ConversionExpression => EvaluateConversionExpression((BoundConversionExpression)node),
             _ => throw new Exception($"Unexpected node {node.Kind}")
         };
     }
@@ -129,7 +132,11 @@ internal sealed class Evaluator
 
         switch (b.Op.Kind)
         {
-            case BoundBinaryOperatorKind.Addition: return (int)left + (int)right;
+            case BoundBinaryOperatorKind.Addition:
+                if (b.Type == TypeSymbol.Int)
+                    return (int)left + (int)right;
+                else
+                    return (string)left + (string)right;
             case BoundBinaryOperatorKind.Substraction: return (int)left - (int)right;
             case BoundBinaryOperatorKind.Multiplication: return (int)left * (int)right;
             case BoundBinaryOperatorKind.Division: return (int)left / (int)right;
@@ -159,5 +166,44 @@ internal sealed class Evaluator
             default:
                 throw new Exception($"Unexpected binary operator {b.Op}");
         };
+    }
+
+    private object EvaluateCallExpression(BoundCallExpression node)
+    {
+        if (node.Function == BuiltinFunctions.Input)
+        {
+            return Console.ReadLine();
+        }
+        else if (node.Function == BuiltinFunctions.Print)
+        {
+            var message = (string)EvaluateExpression(node.Arguments[0]);
+            Console.WriteLine(message);
+
+            return null;
+        }
+        else if (node.Function == BuiltinFunctions.Random)
+        {
+            var max = (int)EvaluateExpression(node.Arguments[0]);
+
+            return RandomNumberGenerator.GetInt32(max);
+        }
+        else
+        {
+            throw new Exception($"Unexpected function {node.Function}");
+        }
+    }
+
+    private object EvaluateConversionExpression(BoundConversionExpression node)
+    {
+        var value = EvaluateExpression(node.Expression);
+
+        if (node.Type == TypeSymbol.Bool)
+            return Convert.ToBoolean(value);
+        else if (node.Type == TypeSymbol.Int)
+            return Convert.ToInt32(value);
+        else if (node.Type == TypeSymbol.String)
+            return Convert.ToString(value);
+        else
+            throw new Exception($"Unexpected conversion to {node.Type}");
     }
 }
