@@ -12,6 +12,7 @@ internal abstract class BoundTreeRewriter
             BoundNodeKind.VariableDeclaration => RewriteVariableDeclaration((BoundVariableDeclaration)node),
             BoundNodeKind.IfStatement => RewriteIfStatement((BoundIfStatement)node),
             BoundNodeKind.WhileStatement => RewriteWhileStatement((BoundWhileStatement)node),
+            BoundNodeKind.DoWhileStatement => RewriteDoWhileStatement((BoundDoWhileStatement)node),
             BoundNodeKind.ForStatement => RewriteForStatement((BoundForStatement)node),
             BoundNodeKind.LabelStatement => RewriteLabelStatement((BoundLabelStatement)node),
             BoundNodeKind.GotoStatement => RewriteGoToStatement((BoundGotoStatement)node),
@@ -83,6 +84,16 @@ internal abstract class BoundTreeRewriter
             return node;
 
         return new BoundWhileStatement(condition, body);
+    }
+
+    protected virtual BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
+    {
+        var body = RewriteStatement(node.Body);
+        var condition = RewriteExpression(node.Condition);
+        if (body == node.Body && condition == node.Condition)
+            return node;
+
+        return new BoundDoWhileStatement(body, condition);
     }
 
     protected virtual BoundStatement RewriteForStatement(BoundForStatement node)

@@ -168,6 +168,25 @@ public class EvaluatorTests
     }
 
     [Fact]
+    public void Evaluator_DoWhileStatement_Reports_CannotConvert()
+    {
+        var text = @"
+                {
+                    var x = 0
+                    do
+                        x = 10
+                    while [10]
+                }
+            ";
+
+        var diagnostics = @"
+                Cannot convert type 'int' to 'bool'.
+            ";
+
+        AssertDiagnostics(text, diagnostics);
+    }
+
+    [Fact]
     public void Evaluator_ForStatement_Reports_CannotConvert_LowerBound()
     {
         var text = @"

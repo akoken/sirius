@@ -77,6 +77,7 @@ internal sealed class Parser
             SyntaxKind.LetKeyword or SyntaxKind.VarKeyword => ParseVariableDeclaration(),
             SyntaxKind.IfKeyword => ParseIfStatement(),
             SyntaxKind.WhileKeyword => ParseWhileStatement(),
+            SyntaxKind.DoKeyword => ParseDoWhileStatement(),
             SyntaxKind.ForKeyword => ParseForStatement(),
             _ => ParseExpressionStatement()
         };
@@ -151,6 +152,16 @@ internal sealed class Parser
         var body = ParseStatement();
 
         return new WhileStatementSyntax(keyword, condition, body);
+    }
+
+    private StatementSyntax ParseDoWhileStatement()
+    {
+        var doKeyword = MatchToken(SyntaxKind.DoKeyword);
+        var body = ParseStatement();
+        var whileKeyword = MatchToken(SyntaxKind.WhileKeyword);
+        var condition = ParseExpression();
+
+        return new DoWhileStatementSyntax(doKeyword, body, whileKeyword, condition);
     }
 
     private StatementSyntax ParseForStatement()

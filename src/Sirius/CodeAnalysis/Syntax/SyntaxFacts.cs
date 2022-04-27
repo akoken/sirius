@@ -64,6 +64,7 @@ public static class SyntaxFacts
             "true" => SyntaxKind.TrueKeyword,
             "var" => SyntaxKind.VarKeyword,
             "while" => SyntaxKind.WhileKeyword,
+            "do" => SyntaxKind.DoKeyword,
             _ => SyntaxKind.IdentifierToken,
         };
     }
@@ -124,6 +125,7 @@ public static class SyntaxFacts
             SyntaxKind.TrueKeyword => "true",
             SyntaxKind.VarKeyword => "var",
             SyntaxKind.WhileKeyword => "while",
+            SyntaxKind.DoKeyword => "do",
             _ => null,
         };
     }

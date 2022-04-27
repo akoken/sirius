@@ -43,6 +43,7 @@ public enum SyntaxKind
     TrueKeyword,
     VarKeyword,
     WhileKeyword,
+    DoKeyword,
 
     // Nodes
     CompilationUnit,
@@ -53,6 +54,7 @@ public enum SyntaxKind
     VariableDeclaration,
     IfStatement,
     WhileStatement,
+    DoWhileStatement,
     ForStatement,
     ExpressionStatement,
 
