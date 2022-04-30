@@ -30,6 +30,7 @@ public enum SyntaxKind
     CloseParenthesisToken,
     OpenBraceToken,
     CloseBraceToken,
+    ColonToken,
     CommaToken,
     IdentifierToken,
 
