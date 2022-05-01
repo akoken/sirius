@@ -115,6 +115,7 @@ public static class SyntaxFacts
             SyntaxKind.CloseParenthesisToken => ")",
             SyntaxKind.OpenBraceToken => "{",
             SyntaxKind.CloseBraceToken => "}",
+            SyntaxKind.ColonToken => ":",
             SyntaxKind.CommaToken => ",",
             SyntaxKind.ElseKeyword => "else",
             SyntaxKind.FalseKeyword => "false",

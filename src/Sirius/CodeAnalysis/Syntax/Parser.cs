@@ -118,10 +118,27 @@ internal sealed class Parser
         var expected = Current.Kind == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
         var keyword = MatchToken(expected);
         var identifier = MatchToken(SyntaxKind.IdentifierToken);
+        var typeClause = ParseOptionalTypeClause();
         var equals = MatchToken(SyntaxKind.EqualsToken);
         var initializer = ParseExpression();
 
-        return new VariableDeclarationSyntax(keyword, identifier, equalsToken: equals, initializer);
+        return new VariableDeclarationSyntax(keyword, identifier, typeClause, equalsToken: equals, initializer);
+    }
+
+    private TypeClauseSyntax ParseOptionalTypeClause()
+    {
+        if (Current.Kind != SyntaxKind.ColonToken)
+            return null;
+
+        return ParseTypeClause();
+    }
+
+    private TypeClauseSyntax ParseTypeClause()
+    {
+        var colonToken = MatchToken(SyntaxKind.ColonToken);
+        var identier = MatchToken(SyntaxKind.IdentifierToken);
+
+        return new TypeClauseSyntax(colonToken, identier);
     }
 
     private StatementSyntax ParseIfStatement()
