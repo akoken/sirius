@@ -6,8 +6,10 @@ namespace Sirius.CodeAnalysis;
 
 internal sealed class Evaluator
 {
+    // TODO: 1.27.00 video
     private readonly BoundBlockStatement _root;
     private readonly Dictionary<VariableSymbol, object> _variables;
+    private readonly Stack<Dictionary<VariableSymbol, object>> _locals = new Stack<Dictionary<VariableSymbol, object>>();
 
     private object _lastValue;
 

@@ -64,9 +64,93 @@ internal sealed class Parser
 
     public CompilationUnitSyntax ParseCompilationUnit()
     {
-        var statement = ParseStatement();
+        var members = ParseMembers();
         var endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-        return new CompilationUnitSyntax(statement, endOfFileToken);
+        return new CompilationUnitSyntax(members, endOfFileToken);
+    }
+
+    private ImmutableArray<MemberSyntax> ParseMembers()
+    {
+        var members = ImmutableArray.CreateBuilder<MemberSyntax>();
+
+        while (Current.Kind != SyntaxKind.EndOfFileToken)
+        {
+            var startToken = Current;
+
+            var member = ParseMember();
+            members.Add(member);
+
+            // If ParseMember() did not consume any token,
+            // we need to skip the current token and continue
+            // in order to avoid infinite loop.
+
+            // We don't need to report an error, because we'll already
+            // tried to parse an expression statement and reported one.
+            if (Current == startToken)
+            {
+                NextToken();
+            }
+        }
+
+        return members.ToImmutable();
+    }
+
+    private MemberSyntax ParseMember()
+    {
+        if (Current.Kind == SyntaxKind.FunctionKeyword)
+        {
+            return ParseFunctionDeclaration();
+        }
+
+        return ParseGlobalStatement();
+    }
+
+    private MemberSyntax ParseFunctionDeclaration()
+    {
+        var functionKeyword = MatchToken(SyntaxKind.FunctionKeyword);
+        var identifier = MatchToken(SyntaxKind.IdentifierToken);
+
+        var openParenthesisToken = MatchToken(SyntaxKind.OpenParenthesisToken);
+        var parameters = ParseParameterList();
+        var closeParenthesisToken = MatchToken(SyntaxKind.CloseParenthesisToken);
+        var type = ParseOptionalTypeClause();
+        var body = ParseBlockStatement();
+
+        return new FunctionDeclarationSyntax(functionKeyword, identifier, openParenthesisToken, parameters, closeParenthesisToken, type, body);
+    }
+
+    private SeparatedSyntaxList<ParameterSyntax> ParseParameterList()
+    {
+        var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
+
+        while (Current.Kind != SyntaxKind.CloseParenthesisToken && Current.Kind != SyntaxKind.EndOfFileToken)
+        {
+            var parameter = ParseParameter();
+            nodesAndSeparators.Add(parameter);
+
+            if (Current.Kind != SyntaxKind.CloseParenthesisToken)
+            {
+                var separator = MatchToken(SyntaxKind.CommaToken);
+                nodesAndSeparators.Add(separator);
+            }
+        }
+
+        return new SeparatedSyntaxList<ParameterSyntax>(nodesAndSeparators.ToImmutable());
+    }
+
+    private ParameterSyntax ParseParameter()
+    {
+        var identifier = MatchToken(SyntaxKind.IdentifierToken);
+        var type = ParseOptionalTypeClause();
+
+        return new ParameterSyntax(identifier, type);
+    }
+
+    private MemberSyntax ParseGlobalStatement()
+    {
+        var statement = ParseStatement();
+
+        return new GlobalStatementSyntax(statement);
     }
 
     private StatementSyntax ParseStatement()

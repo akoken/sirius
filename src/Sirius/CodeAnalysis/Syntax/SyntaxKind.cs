@@ -37,6 +37,7 @@ public enum SyntaxKind
     // Keywords
     FalseKeyword,
     ForKeyword,
+    FunctionKeyword,
     IfKeyword,
     ElseKeyword,
     LetKeyword,
@@ -48,6 +49,9 @@ public enum SyntaxKind
 
     // Nodes
     CompilationUnit,
+    FunctionDeclaration,
+    GlobalStatement,
+    Parameter,
     ElseClause,
     TypeClause,
 
