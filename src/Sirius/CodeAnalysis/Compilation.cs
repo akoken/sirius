@@ -1,8 +1,8 @@
-﻿using Sirius.CodeAnalysis.Binding;
+﻿using System.Collections.Immutable;
+using Sirius.CodeAnalysis.Binding;
 using Sirius.CodeAnalysis.Lowering;
 using Sirius.CodeAnalysis.Symbols;
 using Sirius.CodeAnalysis.Syntax;
-using System.Collections.Immutable;
 
 namespace Sirius.CodeAnalysis;
 
@@ -64,6 +64,7 @@ public class Compilation
     private BoundBlockStatement GetStatement()
     {
         var statement = GlobalScope.Statement;
+
         return Lowerer.Lower(statement);
     }
 }

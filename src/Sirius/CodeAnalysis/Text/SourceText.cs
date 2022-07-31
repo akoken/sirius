@@ -50,6 +50,7 @@ public sealed class SourceText
 
         int position = 0;
         int lineStart = 0;
+
         while (position < text.Length)
         {
             var lineBreakWidth = GetLineBreakWidth(text, position);
