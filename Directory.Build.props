@@ -3,6 +3,8 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>Preview</LangVersion>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
+    <CodeAnalysisRuleset>$(MSBuildThisFileDirectory)ca.ruleset</CodeAnalysisRuleset>
   </PropertyGroup>
 
 </Project>
